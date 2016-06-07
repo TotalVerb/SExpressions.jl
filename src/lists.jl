@@ -1,6 +1,6 @@
 @reexport module Lists
 
-export Cons, List, isnil, ispair, car, cdr, nil, lispify
+export Cons, List, isnil, ispair, car, cdr, caar, cadr, nil, lispify, ∘
 
 f ∘ g::Function = x -> f(g(x))
 f ∘ g           = map(f, g)
@@ -20,6 +20,11 @@ end
 
 car(α::Cons) = α.car
 cdr(α::Cons) = α.cdr
+caar(α::Cons) = car(car(α))
+cadr(α::Cons) = car(cdr(α))
+
+Base.map(f, α::Nil) = nil
+Base.map(f, α::Cons) = Cons(f(car(α)), f ∘ cdr(α))
 
 Base.:(==)(α::Cons, β::Cons) = car(α) == car(β) && cdr(α) == cdr(β)
 
