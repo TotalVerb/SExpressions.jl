@@ -7,6 +7,47 @@
 The proliferation of markup and data interchange formats is a huge mistake. The
 world would be a simpler and easier place if everyone just used s-expressions.
 
+## Requirements
+
+This package is not yet listed. Install at your own peril. It also requires a
+master Julia for now... though 0.4 support is not impossible and will come when
+`Compat.jl` includes some `IOContext` features.
+
+## Parsing and pretty-printing
+
+This package provides a simple recursive descent parser for s-expressions:
+
+```julia
+julia> sx"""
+       (define (sqr x) (* x x))
+       """
+(define (sqr x) (* x x))
+```
+
+Note that the parser is neither fast nor memory-efficient, but it is simple. It
+doesn’t support any fancy features, even those present in most lisps.
+
+As is the convention, a pretty-printed representation is available using the
+`IOContext` flag for `:multiline`. Note that this package is “language”-agnostic
+and won’t format for any particular language, and doesn’t understand keywords,
+but rather it will format in accordance with general principles. Note that this
+flag is the default on the REPL.
+
+```julia
+julia> sx"""
+       (define multiply-by-four-and-add-five
+         (let ([four 4]
+               [five 5])
+           (λ (x) (+ (* x four) five))))
+       """
+(define
+  multiply-by-four-and-add-five
+  (let ((four 4) (five 5)) (λ (x) (+ (* x four) five))))
+```
+
+This is not fast either. This package is not intended for huge files containing
+s-expressions.
+
 ## HTML
 
 This package provides a way to write HTML pages using terse s-expression syntax.

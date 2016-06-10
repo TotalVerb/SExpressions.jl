@@ -1,8 +1,8 @@
 module SExpressions
 using Reexport
 
-include("lists.jl")
-include("parser.jl")
+include("Lists.jl")
+include("Parser.jl")
 include("Htsx.jl")
 
 import .Parser: parse

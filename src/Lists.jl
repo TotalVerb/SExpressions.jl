@@ -1,6 +1,6 @@
 @reexport module Lists
 
-export Cons, List, isnil, ispair, car, cdr, caar, cadr, nil, lispify, ∘
+export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘
 
 f ∘ g::Function = x -> f(g(x))
 f ∘ g           = map(f, g)
@@ -22,6 +22,7 @@ car(α::Cons) = α.car
 cdr(α::Cons) = α.cdr
 caar(α::Cons) = car(car(α))
 cadr(α::Cons) = car(cdr(α))
+cddr(α::Cons) = cdr(cdr(α))
 
 Base.map(f, α::Nil) = nil
 Base.map(f, α::Cons) = Cons(f(car(α)), f ∘ cdr(α))
@@ -50,6 +51,6 @@ unparse(s::Symbol) = string(s)
 unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
 
-Base.show(io::IO, α::List) = write(io, unparse(α))
+include("lists/show.jl")
 
 end  # Lists module
