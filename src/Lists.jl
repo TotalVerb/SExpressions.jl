@@ -24,7 +24,7 @@ caar(α::Cons) = car(car(α))
 cadr(α::Cons) = car(cdr(α))
 cddr(α::Cons) = cdr(cdr(α))
 
-Base.map(f, α::Nil) = nil
+Base.map(f, ::Nil) = nil
 Base.map(f, α::Cons) = Cons(f(car(α)), f ∘ cdr(α))
 
 Base.:(==)(α::Cons, β::Cons) = car(α) == car(β) && cdr(α) == cdr(β)
