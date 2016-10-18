@@ -15,7 +15,7 @@ macro sx_str(x::String)
 end
 
 macro htsx_str(x::String)
-    Htsx.tohtml(parse(x))
+    Htsx.tohtml(parses(x))
 end
 
 export @sx_str, @htsx_str, Htsx

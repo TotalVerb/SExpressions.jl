@@ -17,6 +17,11 @@ isnewline(c) = c ∈ _NEWLINE
 const _CLOSE = Dict('(' => ')', '[' => ']', '{' => '}', '"' => '"')
 close(c) = _CLOSE[c]
 
+const _READER_MACROS = Dict(
+    '\'' => :quote,
+    '`' => :quasiquote,
+    ',' => :unquote)
+
 """
 Skip all whitespace characters starting at the given index of the given
 `AbstractString`.
@@ -110,8 +115,25 @@ function parse(s::AbstractString, i)
     elseif s[i] == ';'
         i = skipline(s, i)
         parse(s, i)
+    elseif haskey(_READER_MACROS, s[i])
+        c = s[i]
+        i, ele = parse(s, nextind(s, i))
+        i, List(_READER_MACROS[c], ele)
     else
         parse(Symbol, s, i)
+    end
+end
+
+"""
+Parse an entire string into a single list.
+"""
+function parses(s::AbstractString, i=1)
+    i = skipws(s, i)
+    if i > endof(s)
+        nil
+    else
+        i, ele = parse(s, i)
+        Cons(ele, parses(s, i))
     end
 end
 

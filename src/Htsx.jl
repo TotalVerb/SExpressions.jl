@@ -28,9 +28,15 @@ end
 
 function gethiccupnode(head::Keyword, ρ, tmpls)
     if head == Keyword("template")
-        tmpls[car(ρ)::Symbol](cdr(ρ))
-    elseif head == Keyword("define-template")
-        tmpls[car(ρ)::Symbol] = eval(tojulia(cadr(ρ)))
+        tohiccup(tmpls[car(ρ)::Symbol](cdr(ρ)...))
+    elseif head == Keyword("define")
+        fn = tojulia(car(ρ))
+        if !Meta.isexpr(fn, :call)
+            error("wrong define syntax")
+        end
+        tmpls[fn.args[1]] = eval(
+            Expr(:function, Expr(:tuple, fn.args[2:end]...),
+            tojulia(cadr(ρ))))
         Hiccup.TrustedHtml("")  # nothing value
     else
         error("Unsupported HTSX keyword $head")
@@ -51,6 +57,6 @@ tohiccup(s::String, tmpls) = s
 tohiccup(i::BigInt, tmpls) = string(i)
 tohiccup(x) = tohiccup(x, Dict{Symbol,Any}())
 
-tohtml(α::List) = "<!DOCTYPE html>\n" * string(tohiccup(α))
+tohtml(α::List) = "<!DOCTYPE html>\n" * join(string ∘ tohiccup ∘ α)
 
 end
