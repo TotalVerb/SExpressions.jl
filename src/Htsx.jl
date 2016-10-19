@@ -1,9 +1,21 @@
 module Htsx
 
+module Environment
+
+using ...Lists
+using ...Keywords
+using ...SimpleJulia
+using Hiccup
+
+end
+
 using ..Lists
 using ..Keywords
 using ..SimpleJulia
 using Hiccup
+using FunctionalCollections
+
+setindex(x, y, z) = assoc(x, z, y)
 
 """
 Return `true` if `α` is a list, and each element in `α` is a list.
@@ -11,33 +23,46 @@ Return `true` if `α` is a list, and each element in `α` is a list.
 islisty(α::List) = all(β -> isa(β, List), α)
 islisty(_) = false
 
+"""
+Monad-ish: thread second argument through successive calls of `f` to elements
+of `xs`.
+"""
+function acc2(f, xs, acc)
+    res = []
+    for x in xs
+        r, acc = f(x, acc)
+        push!(res, r)
+    end
+    res, acc
+end
+
 function gethiccupnode(head::Symbol, ρ, tmpls)
     if isnil(ρ)
-        Node(head, Dict(), [])
+        Node(head, Dict(), []), tmpls
     else
         if islisty(car(ρ))  # is a list of attrs
             attrs = Dict(car(β) => cadr(β) for β in car(ρ))
-            content = List((tohiccup(ν, tmpls) for ν in cdr(ρ))...)
+            content, tmpls = acc2(tohiccup, cdr(ρ), tmpls)
         else  # is just another body element
             attrs = Dict()
-            content = List((tohiccup(ν, tmpls) for ν in ρ)...)
+            content, tmpls = acc2(tohiccup, ρ, tmpls)
         end
-        Node(head, attrs, collect(content))
+        Node(head, attrs, collect(content)), tmpls
     end
 end
 
 function gethiccupnode(head::Keyword, ρ, tmpls)
     if head == Keyword("template")
-        tohiccup(tmpls[car(ρ)::Symbol](cdr(ρ)...))
+        tohiccup(tmpls[car(ρ)::Symbol](cdr(ρ)...), tmpls)
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)
             error("wrong define syntax")
         end
-        tmpls[fn.args[1]] = eval(
+        newfn = eval(Environment,
             Expr(:function, Expr(:tuple, fn.args[2:end]...),
             tojulia(cadr(ρ))))
-        Hiccup.TrustedHtml("")  # nothing value
+        html"", setindex(tmpls, newfn, fn.args[1])  # nothing value
     else
         error("Unsupported HTSX keyword $head")
     end
@@ -53,10 +78,18 @@ function tohiccup(α::List, tmpls)
     end
 end
 
-tohiccup(s::String, tmpls) = s
-tohiccup(i::BigInt, tmpls) = string(i)
-tohiccup(x) = tohiccup(x, Dict{Symbol,Any}())
+tohiccup(s::String, tmpls) = s, tmpls
+tohiccup(i::BigInt, tmpls) = string(i), tmpls
+function tohiccups(α::List, tmpls)
+    parts = []
+    for β in α
+        res, tmpls = tohiccup(β, tmpls)
+        push!(parts, res)
+    end
+    parts
+end
 
-tohtml(α::List) = "<!DOCTYPE html>\n" * join(string ∘ tohiccup ∘ α)
+tohtml(α::List) = "<!DOCTYPE html>\n" *
+    join(string ∘ tohiccups(α, PersistentHashMap{Symbol,Any}()))
 
 end

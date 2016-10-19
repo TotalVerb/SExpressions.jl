@@ -7,7 +7,7 @@ include("SimpleJulia.jl")
 include("Parser.jl")
 include("Htsx.jl")
 
-import .Parser: parse
+import .Parser: parse, parses
 import .Htsx
 
 macro sx_str(x::String)
