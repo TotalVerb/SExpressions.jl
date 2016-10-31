@@ -52,6 +52,6 @@ end
   (body (p "This is page " (#:template foo 1 1) "."))))
 """ == """
 <!DOCTYPE html>
-HTML{String}("")<html lang="en"><head><title>Page 2</title><body><p>This is page 2.</p></body></head></html>"""
+<html lang="en"><head><title>Page 2</title><body><p>This is page 2.</p></body></head></html>"""
 
 end
