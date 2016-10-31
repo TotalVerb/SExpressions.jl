@@ -95,6 +95,6 @@ function tohiccups(α::List, tmpls)
 end
 
 tohtml(α::List, tmpls=PersistentHashMap{Symbol,Any}()) = "<!DOCTYPE html>\n" *
-    join(string ∘ tohiccups(α, tmpls))
+    join(stringmime("text/html", p) for p in tohiccups(α, tmpls))
 
 end
