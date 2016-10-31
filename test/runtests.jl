@@ -11,6 +11,8 @@ using Base.Test
         (:sqr, :x),
         (:(^), :x, 2)))
 
+@test isa(SExpressions.parsefile("data/scheme.jl"), List)
+
 end
 
 @testset "HTSX" begin

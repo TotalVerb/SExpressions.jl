@@ -124,6 +124,8 @@ function parse(s::AbstractString, i)
     end
 end
 
+parse(s::AbstractString) = parse(s, 1)[2]
+
 """
 Parse an entire string into a single list.
 """
@@ -137,6 +139,9 @@ function parses(s::AbstractString, i=1)
     end
 end
 
-parse(s::AbstractString) = parse(s, 1)[2]
+"""
+Parse a file into a single list.
+"""
+parsefile(filename::AbstractString) = parses(readstring(filename))
 
 end

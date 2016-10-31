@@ -54,6 +54,8 @@ end
 function gethiccupnode(head::Keyword, ρ, tmpls)
     if head == Keyword("template")
         tohiccup(tmpls[car(ρ)::Symbol](cdr(ρ)...), tmpls)
+    elseif head == Keyword("var")
+        tmpls[car(ρ)::Symbol], tmpls
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)
@@ -80,6 +82,9 @@ end
 
 tohiccup(s::String, tmpls) = s, tmpls
 tohiccup(i::BigInt, tmpls) = string(i), tmpls
+
+tohiccup(x, tmpls) = error("Can’t serialize $(repr(x))")
+
 function tohiccups(α::List, tmpls)
     parts = []
     for β in α
@@ -89,7 +94,7 @@ function tohiccups(α::List, tmpls)
     parts
 end
 
-tohtml(α::List) = "<!DOCTYPE html>\n" *
-    join(string ∘ tohiccups(α, PersistentHashMap{Symbol,Any}()))
+tohtml(α::List, tmpls=PersistentHashMap{Symbol,Any}()) = "<!DOCTYPE html>\n" *
+    join(string ∘ tohiccups(α, tmpls))
 
 end
