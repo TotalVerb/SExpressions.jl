@@ -15,6 +15,25 @@ using Base.Test
 
 end
 
+@testset "Julia" begin
+
+@test SExpressions.SimpleJulia.tojulia(sx"(+ 1 1)") == :(1 + 1)
+@test SExpressions.SimpleJulia.tojulia(sx"""
+  (if x y z)
+""") == :(x ? y : z)
+
+evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
+
+@test evaluate(sx"'x") == :x
+@test evaluate(sx"`(+ 1 1)") == List(:+, 1, 1)
+@test evaluate(sx"""
+(begin
+  (= x 2)
+  `(+ ,x x))
+""") == List(:+, 2, :x)
+
+end
+
 @testset "HTSX" begin
 
 @test sx"""
