@@ -32,6 +32,13 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
   `(+ ,x x))
 """) == List(:+, 2, :x)
 
+@test evaluate(sx"""
+(begin
+  (define (foo (:: x Integer)) 1)
+  (define (foo (:: x String)) 2)
+  (string (foo 1) (foo "x")))
+""") == "12"
+
 end
 
 include("htsx.jl")

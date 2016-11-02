@@ -15,7 +15,9 @@ const _IMPLICIT_KEYWORDS = Dict(
     :(=) => :(=),
     :if => :if,
     :while => :while,
-    :begin => :block)
+    :begin => :block,
+    :(::) => :(::),
+    :define => :function)
 
 quasiquote(x) = x
 quasiquote(x::Symbol) = Meta.quot(x)
