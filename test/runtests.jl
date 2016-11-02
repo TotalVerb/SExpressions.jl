@@ -41,6 +41,13 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
 
 @test evaluate(sx"((. Base +) 1 2)") == 3
 
+@test evaluate(sx"(and #t #t)")
+@test !evaluate(sx"(and #t #f)")
+@test !evaluate(sx"(and #f #f)")
+@test evaluate(sx"(or #t #t)")
+@test evaluate(sx"(or #t #f)")
+@test !evaluate(sx"(or #f #f)")
+
 end
 
 include("htsx.jl")

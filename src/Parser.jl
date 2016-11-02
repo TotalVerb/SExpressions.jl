@@ -44,7 +44,7 @@ function skipline(s::AbstractString, i)
 end
 
 """
-Parse a `Symbol` or number or `Keyword` at the given index.
+Parse a `Symbol` or number or `Keyword` or `Bool` at the given index.
 """
 function parse(::Type{Symbol}, s::AbstractString, i)
     i = skipws(s, i)
@@ -56,6 +56,10 @@ function parse(::Type{Symbol}, s::AbstractString, i)
     str = join(buf, "")
     i, if all(isdigit, str)
         Base.parse(BigInt, str)  # FIXME: floats?
+    elseif str == "#t"
+        true
+    elseif str == "#f"
+        false
     elseif length(str) ≥ 2 && startswith(str, "#:")
         Keyword(String(collect(drop(str, 2))))
     else
