@@ -34,24 +34,4 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
 
 end
 
-@testset "HTSX" begin
-
-@test sx"""
-(html ([lang "en"])
-  (head (title "Hello World!"))
-  (body (p "This is my first HTSX page")))
-""" == lispify((
-        :html, ((:lang, "en"),),
-        (:head, (:title, "Hello World!")),
-        (:body, (:p, "This is my first HTSX page"))))
-
-@test htsx"""
-(#:define (foo x y) (string (+ x y)))
-(html ([lang "en"])
-  (head (title "Page " (#:template foo 1 1))
-  (body (p "This is page " (#:template foo 1 1) "."))))
-""" == """
-<!DOCTYPE html>
-<html lang="en"><head><title>Page 2</title><body><p>This is page 2.</p></body></head></html>"""
-
-end
+include("htsx.jl")

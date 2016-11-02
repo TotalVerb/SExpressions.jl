@@ -15,6 +15,26 @@ using ..SimpleJulia
 using Hiccup
 using FunctionalCollections
 
+function makeenv(ass=Dict())
+    Env = Module(gensym(:Env))
+    eval(Env, quote
+        using SExpressions.Lists
+        using SExpressions.Keywords
+        using SExpressions.SimpleJulia
+        using Hiccup
+    end)
+    for (k, v) in ass
+        eval(Env, :($k = $v))
+    end
+    Env
+end
+
+immutable HtsxState
+    env::Module
+end
+getvar(s::HtsxState, v::Symbol) = getfield(s.env, v)
+evaluate!(s::HtsxState, ex) = eval(s.env, tojulia(ex))
+
 setindex(x, y, z) = assoc(x, z, y)
 
 """
@@ -36,65 +56,86 @@ function acc2(f, xs, acc)
     res, acc
 end
 
-function gethiccupnode(head::Symbol, ρ, tmpls)
+function gethiccupnode(head::Symbol, ρ, state)
     if isnil(ρ)
-        Node(head, Dict(), []), tmpls
+        Node(head, Dict(), []), state
     else
         if islisty(car(ρ))  # is a list of attrs
             attrs = Dict(car(β) => cadr(β) for β in car(ρ))
-            content, tmpls = acc2(tohiccup, cdr(ρ), tmpls)
+            content, state = acc2(tohiccup, cdr(ρ), state)
         else  # is just another body element
             attrs = Dict()
-            content, tmpls = acc2(tohiccup, ρ, tmpls)
+            content, state = acc2(tohiccup, ρ, state)
         end
-        Node(head, attrs, collect(content)), tmpls
+        Node(head, attrs, collect(content)), state
     end
 end
 
-function gethiccupnode(head::Keyword, ρ, tmpls)
+function gethiccupnode(head::Keyword, ρ, state)
     if head == Keyword("template")
-        tohiccup(tmpls[car(ρ)::Symbol](cdr(ρ)...), tmpls)
+        tohiccup(getvar(state, car(ρ)::Symbol)(cdr(ρ)...), state)
     elseif head == Keyword("var")
-        tmpls[car(ρ)::Symbol], tmpls
+        getvar(state, car(ρ)::Symbol), state
+    elseif head == Keyword("when")
+        cond = car(ρ)
+        if evaluate!(state, cond)
+            res, state = tohiccups(cdr(ρ), state)
+            HTML(sprint(show_html, res)), state
+        else
+            html"", state
+        end
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)
             error("wrong define syntax")
         end
-        newfn = eval(Environment,
-            Expr(:function, Expr(:tuple, fn.args[2:end]...),
+        newfn = eval(state.env,
+            Expr(:function, Expr(:call, fn.args...),
             tojulia(cadr(ρ))))
-        html"", setindex(tmpls, newfn, fn.args[1])  # nothing value
+        html"", state  # nothing value
     else
         error("Unsupported HTSX keyword $head")
     end
 end
 
-function tohiccup(α::List, tmpls)
+function tohiccup(α::List, state)
     len = length(α)
     if len < 1
         error("Empty list not allowed here")
     else
         head = car(α)
-        gethiccupnode(head, cdr(α), tmpls)
+        gethiccupnode(head, cdr(α), state)
     end
 end
 
-tohiccup(s::String, tmpls) = s, tmpls
-tohiccup(i::BigInt, tmpls) = string(i), tmpls
+tohiccup(s::String, state) = s, state
+tohiccup(i::BigInt, state) = string(i), state
 
-tohiccup(x, tmpls) = error("Can’t serialize $(repr(x))")
+tohiccup(x, state) = error("Can’t serialize $(repr(x))")
 
-function tohiccups(α::List, tmpls)
+typealias ListOrArray Union{List, Array}
+
+function tohiccups(α::ListOrArray, state::HtsxState)
     parts = []
     for β in α
-        res, tmpls = tohiccup(β, tmpls)
+        res, state = tohiccup(β, state)
         push!(parts, res)
     end
-    parts
+    parts, state
 end
 
-tohtml(α::List, tmpls=PersistentHashMap{Symbol,Any}()) = "<!DOCTYPE html>\n" *
-    join(stringmime("text/html", p) for p in tohiccups(α, tmpls))
+function show_html(io::IO, ashiccup)
+    join(io, (stringmime("text/html", p) for p in ashiccup))
+end
+
+function tohtml(io::IO, α::List, tmpls=PersistentHashMap{Symbol,Any}())
+    println(io, "<!DOCTYPE html>")
+    state = HtsxState(makeenv(tmpls))
+    ashiccup, _ = tohiccups(α, state)
+    show_html(io, ashiccup)
+end
+
+tohtml(α::List, tmpls=PersistentHashMap{Symbol,Any}()) =
+    sprint(tohtml, α, tmpls)
 
 end

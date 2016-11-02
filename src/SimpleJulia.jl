@@ -6,6 +6,10 @@ using ..Lists
 using ..Keywords
 
 tojulia(x) = x
+function tojulia(x::Symbol)
+    xstr = string(x)
+    Symbol(xstr[end] == '?' ? "is" * xstr[1:end-1] : xstr)
+end
 
 const _IMPLICIT_KEYWORDS = Dict(
     :(=) => :(=),
