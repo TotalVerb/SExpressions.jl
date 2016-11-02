@@ -9,6 +9,7 @@ using Hiccup
 
 end
 
+using ..Parser
 using ..Lists
 using ..Keywords
 using ..SimpleJulia
@@ -31,9 +32,11 @@ end
 
 immutable HtsxState
     env::Module
+    file::String
 end
 getvar(s::HtsxState, v::Symbol) = getfield(s.env, v)
 evaluate!(s::HtsxState, ex) = eval(s.env, tojulia(ex))
+relativeto(s::HtsxState, f) = joinpath(dirname(s.file), f)
 
 setindex(x, y, z) = assoc(x, z, y)
 
@@ -84,6 +87,12 @@ function gethiccupnode(head::Keyword, ρ, state)
         else
             html"", state
         end
+    elseif head == Keyword("include")
+        url = evaluate!(state, car(ρ))
+        file = relativeto(state, url)
+        α = Parser.parsefile(file)
+        res, state = tohiccups(α, state)
+        HTML(sprint(show_html, res)), state
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)
@@ -128,14 +137,20 @@ function show_html(io::IO, ashiccup)
     join(io, (stringmime("text/html", p) for p in ashiccup))
 end
 
-function tohtml(io::IO, α::List, tmpls=PersistentHashMap{Symbol,Any}())
+function tohtml(io::IO, α::List, tmpls=PersistentHashMap{Symbol,Any}();
+                file=joinpath(pwd(), "_implicit.htsx"))
     println(io, "<!DOCTYPE html>")
-    state = HtsxState(makeenv(tmpls))
+    state = HtsxState(makeenv(tmpls), file)
     ashiccup, _ = tohiccups(α, state)
     show_html(io, ashiccup)
 end
 
-tohtml(α::List, tmpls=PersistentHashMap{Symbol,Any}()) =
+function tohtml(io::IO, f::AbstractString,
+                tmpls=PersistentHashMap{Symbol,Any}())
+    tohtml(io, Parser.parsefile(f), tmpls; file=abspath(f))
+end
+
+tohtml(α::Union{List,AbstractString}, tmpls=PersistentHashMap{Symbol,Any}()) =
     sprint(tohtml, α, tmpls)
 
 end

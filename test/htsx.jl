@@ -39,4 +39,8 @@
 <!DOCTYPE html>
 <p>yes 2</p>"""
 
+@test Htsx.tohtml("data/file1.lsp") == """
+<!DOCTYPE html>
+<p>File 2: 100</p><p>File 1: 20</p>"""
+
 end
