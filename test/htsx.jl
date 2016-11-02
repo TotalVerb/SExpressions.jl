@@ -43,4 +43,8 @@
 <!DOCTYPE html>
 <p>File 2: 100</p><p>File 1: 20</p>"""
 
+@test Htsx.tohtml("data/test-dispatch.lsp") == """
+<!DOCTYPE html>
+<p>12</p>"""
+
 end
