@@ -39,6 +39,8 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
   (string (foo 1) (foo "x")))
 """) == "12"
 
+@test evaluate(sx"((. Base +) 1 2)") == 3
+
 end
 
 include("htsx.jl")

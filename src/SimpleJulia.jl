@@ -32,6 +32,8 @@ end
 function tojulia(α::List)
     if isa(car(α), Keyword)
         Expr(Symbol(car(α).sym), (tojulia ∘ cdr(α))...)
+    elseif car(α) == :.
+        Expr(:., tojulia(cadr(α)), QuoteNode(tojulia(α[3])))
     elseif car(α) == :quote
         Meta.quot(cadr(α))
     elseif car(α) == :quasiquote
