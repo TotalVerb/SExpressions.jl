@@ -93,6 +93,11 @@ function gethiccupnode(head::Keyword, ρ, state)
         α = Parser.parsefile(file)
         res, state = tohiccups(α, state)
         HTML(sprint(show_html, res)), state
+    elseif head == Keyword("markdown")
+        url = evaluate!(state, car(ρ))
+        file = relativeto(state, url)
+        data = stringmime("text/html", Base.Markdown.parse(readstring(file)))
+        HTML(data), state
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)

@@ -54,4 +54,10 @@
 <!DOCTYPE html>
 <p>0</p>"""
 
+@test Htsx.tohtml("data/test-markdown.lsp") == """
+<!DOCTYPE html>
+<div class="markdown"><h1>Some Markdown</h1>
+<p><strong>Test</strong>.</p>
+</div>"""
+
 end
