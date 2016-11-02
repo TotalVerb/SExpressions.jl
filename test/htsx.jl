@@ -47,4 +47,11 @@
 <!DOCTYPE html>
 <p>12</p>"""
 
+@test htsx"""
+(#:define (foo x) 0)
+(p (#:var (string (foo 1))))
+""" == """
+<!DOCTYPE html>
+<p>0</p>"""
+
 end

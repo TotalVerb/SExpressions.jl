@@ -78,7 +78,7 @@ function gethiccupnode(head::Keyword, ρ, state)
     if head == Keyword("template")
         tohiccup(getvar(state, car(ρ)::Symbol)(cdr(ρ)...), state)
     elseif head == Keyword("var")
-        getvar(state, car(ρ)::Symbol), state
+        evaluate!(state, car(ρ)), state
     elseif head == Keyword("when")
         cond = car(ρ)
         if evaluate!(state, cond)
