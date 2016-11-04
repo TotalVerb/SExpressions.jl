@@ -54,6 +54,8 @@ unparse(s::Symbol) = string(s)
 unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
 
+Base.convert(::Type{List}, xs) = List(xs...)
+
 include("lists/show.jl")
 
 end  # Lists module

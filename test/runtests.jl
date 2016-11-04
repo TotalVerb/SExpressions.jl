@@ -50,6 +50,11 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
 
 @test evaluate(sx"(ref (List 1 2 3) 2)") == 2
 
+@testset "λ" begin
+    @test evaluate(sx"((λ (x) (* x x)) 10)") == 100
+    @test evaluate(sx"((λ (x y) (* x y)) 10 20)") == 200
+end
+
 end
 
 include("htsx.jl")
