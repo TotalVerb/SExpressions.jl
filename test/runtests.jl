@@ -48,6 +48,8 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
 @test evaluate(sx"(or #t #f)")
 @test !evaluate(sx"(or #f #f)")
 
+@test evaluate(sx"(ref (List 1 2 3) 2)") == 2
+
 end
 
 include("htsx.jl")
