@@ -60,4 +60,14 @@
 <p><strong>Test</strong>.</p>
 </div>"""
 
+@testset "Each" begin
+@test htsx"""
+(#:each x (List "x" "y" "z")
+  `((p ,x)))
+""" == """
+<!DOCTYPE html>
+<p>x</p><p>y</p><p>z</p>"""
+
+end
+
 end

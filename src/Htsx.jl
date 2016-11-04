@@ -93,6 +93,19 @@ function gethiccupnode(head::Keyword, ρ, state)
         α = Parser.parsefile(file)
         res, state = tohiccups(α, state)
         HTML(sprint(show_html, res)), state
+    elseif head == Keyword("each")
+        var, array, code = ρ
+        doms = eval(state.env, quote
+            map($(tojulia(array))) do $var
+                $(tojulia(code))
+            end
+        end)
+        f = IOBuffer()
+        for dom in doms
+            res, state = tohiccups(dom, state)
+            show_html(f, res)
+        end
+        HTML(takebuf_string(f)), state
     elseif head == Keyword("markdown")
         url = evaluate!(state, car(ρ))
         file = relativeto(state, url)
