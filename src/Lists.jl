@@ -1,6 +1,7 @@
 @reexport module Lists
 
-export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘
+export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘,
+       append, ++
 
 f ∘ g::Function = x -> f(g(x))
 f ∘ g           = map(f, g)
@@ -55,6 +56,9 @@ unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
 
 Base.convert(::Type{List}, xs) = List(xs...)
+append(::Nil, β::List) = β
+append(α::Cons, β::List) = Cons(car(α), append(cdr(α), β))
+const (++) = append
 
 include("lists/show.jl")
 

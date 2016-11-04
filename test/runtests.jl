@@ -15,6 +15,12 @@ using Base.Test
 
 end
 
+@testset "Lists" begin
+
+@test List(1, 2, 3) ++ List(4, 5, 6) == List(1, 2, 3, 4, 5, 6)
+
+end
+
 @testset "Julia" begin
 
 @test SExpressions.SimpleJulia.tojulia(sx"(+ 1 1)") == :(1 + 1)
