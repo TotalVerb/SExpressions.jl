@@ -1,5 +1,7 @@
 @reexport module Lists
 
+import FunctionalCollections: append
+
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘,
        append, ++
 
