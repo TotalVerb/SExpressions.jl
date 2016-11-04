@@ -67,7 +67,13 @@
 """ == """
 <!DOCTYPE html>
 <p>x</p><p>y</p><p>z</p>"""
+end
 
+@testset "Files" begin
+@test Htsx.tohtml("data/literal-test.lsp") == """
+<!DOCTYPE html>
+<script>alert(\"Hello, World!\");
+</script>"""
 end
 
 end

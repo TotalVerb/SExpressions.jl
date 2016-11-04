@@ -97,6 +97,10 @@ function gethiccupnode(head::Keyword, ρ, state)
         α = Parser.parsefile(file)
         res, state = tohiccups(α, state)
         HTML(sprint(show_html, res)), state
+    elseif head == Keyword("file")
+        url = evaluate!(state, car(ρ))
+        file = relativeto(state, url)
+        readstring(file), state
     elseif head == Keyword("each")
         var, array, code = ρ
         doms = eval(state.env, quote
