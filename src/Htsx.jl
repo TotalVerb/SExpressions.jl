@@ -59,6 +59,10 @@ function acc2(f, xs, acc)
     res, acc
 end
 
+function gethiccupnode(head, ρ, state)
+    error("Invalid HTSX head: $head")
+end
+
 function gethiccupnode(head::Symbol, ρ, state)
     if isnil(ρ)
         Node(head, Dict(), []), state

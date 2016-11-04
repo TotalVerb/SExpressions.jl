@@ -55,6 +55,6 @@ function Base.show(io::IO, α::List)
     if get(io, :multiline, false)
         print(io, spprint(α))
     else
-        print(unparse(α))
+        print(io, unparse(α))
     end
 end
