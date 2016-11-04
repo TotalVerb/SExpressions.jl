@@ -55,6 +55,12 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
     @test evaluate(sx"((λ (x y) (* x y)) 10 20)") == 200
 end
 
+@testset "let" begin
+    @test evaluate(sx"(let ([x 1]) x)") == 1
+    @test evaluate(sx"(let ([x 1] [y 2]) (+ x y))") == 3
+    @test evaluate(sx"(let ([x 1] [y (+ 1 1)]) (+ x y))") == 3
+end
+
 end
 
 include("htsx.jl")

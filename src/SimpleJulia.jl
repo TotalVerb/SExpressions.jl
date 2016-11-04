@@ -39,6 +39,10 @@ function tojulia(α::List)
         Expr(:., tojulia(α[2]), QuoteNode(tojulia(α[3])))
     elseif car(α) == :λ
         Expr(:->, Expr(:tuple, α[2]...), tojulia(α[3]))
+    elseif car(α) == :let
+        Expr(:let,
+             tojulia(α[3]),
+             (Expr(:(=), map(tojulia, γ)...) for γ in α[2])...)
     elseif car(α) == :quote
         Meta.quot(cadr(α))
     elseif car(α) == :quasiquote
