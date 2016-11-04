@@ -1,9 +1,10 @@
 @reexport module Lists
 
 import FunctionalCollections: append
+import Base: flatten
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘,
-       append, ++
+       append, ++, flatten
 
 f ∘ g::Function = x -> f(g(x))
 f ∘ g           = map(f, g)
