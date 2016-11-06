@@ -61,6 +61,7 @@ unparse(i::BigInt) = string(i)
 Base.convert(::Type{List}, xs) = List(xs...)
 append(::Nil, β::List) = β
 append(α::Cons, β::List) = Cons(car(α), append(cdr(α), β))
+append(α::List, β::List, γ::List, γs::List...) = append(append(α, β), γ, γs...)
 const (++) = append
 
 include("lists/show.jl")
