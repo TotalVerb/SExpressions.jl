@@ -79,7 +79,7 @@ end
 @testset "Markdown Render" begin
 @test Htsx.tohtml("data/markdown-render.lsp") == """
 <!DOCTYPE html>
-my [link to](http://example.com)"""
+<p>my <a href="http://example.com">link to</a></p>"""
 end
 
 end
