@@ -68,6 +68,11 @@ end
     @test evaluate(sx"(let ([x 1] [y (+ 1 1)]) (+ x y))") == 3
 end
 
+@testset "." begin
+    @test evaluate(sx"(. Base Markdown)") === Base.Markdown
+    @test evaluate(sx"(. Base Markdown MD)") === Base.Markdown.MD
+end
+
 end
 
 include("htsx.jl")

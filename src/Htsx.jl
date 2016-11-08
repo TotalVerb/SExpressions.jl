@@ -1,14 +1,5 @@
 module Htsx
 
-module Environment
-
-using ...Lists
-using ...Keywords
-using ...SimpleJulia
-using Hiccup
-
-end
-
 using ..Parser
 using ..Lists
 using ..Keywords
@@ -16,12 +7,16 @@ using ..SimpleJulia
 using Hiccup
 using FunctionalCollections
 
+include("Htsx/markdown-htsx.jl")
+include("Htsx/stdlib.jl")
+
 function makeenv(ass=Dict())
     Env = Module(gensym(:Env))
     eval(Env, quote
         using SExpressions.Lists
         using SExpressions.Keywords
         using SExpressions.SimpleJulia
+        import SExpressions.Htsx.StdLib
         using Hiccup
     end)
     for (k, v) in ass

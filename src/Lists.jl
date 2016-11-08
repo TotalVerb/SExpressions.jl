@@ -50,7 +50,7 @@ Base.done(::List, β::List) = isnil(β)
 Base.length(::Nil) = 0
 Base.length(α::Cons) = 1 + length(cdr(α))
 
-Base.getindex(α::Nil, b) = throw(BoundsError(n, b))
+Base.getindex(α::Nil, b) = throw(BoundsError(α, b))
 Base.getindex(α::Cons, b) = b == 1 ? car(α) : cdr(α)[b - 1]
 
 unparse(α::List) = "(" * join(unparse ∘ α, " ") * ")"

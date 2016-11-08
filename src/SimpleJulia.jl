@@ -36,7 +36,11 @@ function tojulia(α::List)
     if isa(car(α), Keyword)
         Expr(Symbol(car(α).sym), (tojulia ∘ cdr(α))...)
     elseif car(α) == :.
-        Expr(:., tojulia(α[2]), QuoteNode(tojulia(α[3])))
+        if length(α) == 3
+            Expr(:., tojulia(α[2]), QuoteNode(tojulia(α[3])))
+        else
+            tojulia(List(:., List(:., α[2], α[3]), drop(α, 3)...))
+        end
     elseif car(α) == :λ
         Expr(:->, Expr(:tuple, α[2]...), tojulia(α[3]))
     elseif car(α) == :let

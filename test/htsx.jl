@@ -76,4 +76,10 @@ end
 </script>"""
 end
 
+@testset "Markdown Render" begin
+@test Htsx.tohtml("data/markdown-render.lsp") == """
+<!DOCTYPE html>
+my [link to](http://example.com)"""
+end
+
 end
