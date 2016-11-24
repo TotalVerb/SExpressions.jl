@@ -139,6 +139,7 @@ function tohiccup(α::List, state)
 end
 
 tohiccup(s::String, state) = s, state
+tohiccup(s::AbstractString, state) = tohiccup(String(s), state)
 tohiccup(i::BigInt, state) = string(i), state
 
 tohiccup(x, state) = error("Can’t serialize $(repr(x))")
