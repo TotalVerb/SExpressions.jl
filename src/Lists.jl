@@ -1,10 +1,14 @@
 @reexport module Lists
 
 import FunctionalCollections: append
-import Base: flatten
+if VERSION ≥ v"0.6.0-"
+    using Base.Iterators
+else
+    import Base.flatten
+end
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘,
-       append, ++, flatten
+       append, ++, flatten, take, drop
 
 f ∘ g::Function = x -> f(g(x))
 f ∘ g           = map(f, g)
