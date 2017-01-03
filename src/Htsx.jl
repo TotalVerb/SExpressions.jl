@@ -4,6 +4,7 @@ using ..Parser
 using ..Lists
 using ..Keywords
 using ..SimpleJulia
+using Compat
 using Hiccup
 using FunctionalCollections
 
@@ -75,7 +76,7 @@ end
 
 function gethiccupnode(head::Keyword, ρ, state)
     if head == Keyword("template")
-        tohiccup(getvar(state, car(ρ)::Symbol)(cdr(ρ)...), state)
+        tohiccup(evaluate!(state, :($(car(ρ))($(cdr(ρ)...)))), state)
     elseif head == Keyword("var")
         evaluate!(state, car(ρ)), state
     elseif head == Keyword("when")
@@ -108,7 +109,7 @@ function gethiccupnode(head::Keyword, ρ, state)
             res, state = tohiccups(dom, state)
             show_html(f, res)
         end
-        HTML(takebuf_string(f)), state
+        HTML(String(take!(f))), state
     elseif head == Keyword("markdown")
         url = evaluate!(state, car(ρ))
         file = relativeto(state, url)
