@@ -10,7 +10,7 @@ end
 const ⊚ = Base.map
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
-       append, ++, flatten, take, drop, ⊚
+       append, ++, flatten, take, drop, ⊚, take
 
 lispify(x) = x
 lispify(::Void) = nil
