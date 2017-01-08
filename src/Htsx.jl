@@ -11,9 +11,10 @@ using FunctionalCollections
 include("Htsx/markdown-htsx.jl")
 include("Htsx/stdlib.jl")
 
-function makeenv(ass=Dict())
+function makeenv(ass=Dict(), modules=[])
     Env = Module(gensym(:Env))
     eval(Env, quote
+        using Compat
         using SExpressions.Lists
         using SExpressions.Keywords
         using SExpressions.SimpleJulia
@@ -22,6 +23,10 @@ function makeenv(ass=Dict())
     end)
     for (k, v) in ass
         eval(Env, :($k = $v))
+    end
+    for touse in modules
+        eval(Env, :($(module_name(touse)) = $touse))
+        eval(Env, :(using .$(module_name(touse))))
     end
     Env
 end
@@ -161,16 +166,18 @@ function show_html(io::IO, ashiccup)
 end
 
 function tohtml(io::IO, α::List, tmpls=PersistentHashMap{Symbol,Any}();
-                file=joinpath(pwd(), "_implicit.htsx"))
+                file=joinpath(pwd(), "_implicit.htsx"),
+                modules=[])
     println(io, "<!DOCTYPE html>")
-    state = HtsxState(makeenv(tmpls), file)
+    state = HtsxState(makeenv(tmpls, modules), file)
     ashiccup, _ = tohiccups(α, state)
     show_html(io, ashiccup)
 end
 
 function tohtml(io::IO, f::AbstractString,
-                tmpls=PersistentHashMap{Symbol,Any}())
-    tohtml(io, Parser.parsefile(f), tmpls; file=abspath(f))
+                tmpls=PersistentHashMap{Symbol,Any}();
+                modules=[])
+    tohtml(io, Parser.parsefile(f), tmpls; file=abspath(f), modules=modules)
 end
 
 tohtml(α::Union{List,AbstractString}, tmpls=PersistentHashMap{Symbol,Any}()) =
