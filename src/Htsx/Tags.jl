@@ -14,6 +14,22 @@ immutable TagMatrix
         DefaultDict{Tuple{String,String}, Int}(0))
 end
 
+tags(m::TagMatrix) = keys(m.popularity)
+
+"""
+    popularity(m::TagMatrix, t::AbstractString)
+
+Return the popularity of tag `t` in `m`.
+"""
+popularity(m::TagMatrix, t) = m.popularity[t]
+
+"""
+    popular(m::TagMatrix)
+
+Return a `Vector` of tags, ordered from most popular to least.
+"""
+popular(m::TagMatrix) = sort(collect(tags(m)), by=t -> -popularity(m, t))
+
 joint(m::TagMatrix, t1, t2) = m.correlation[tuple(sort([t1, t2])...)]
 
 function relatedto(m::TagMatrix, t)
@@ -35,6 +51,6 @@ function populate!(m::TagMatrix, tags, value)
     end
 end
 
-export TagMatrix, joint, relatedto, populate!
+export TagMatrix, joint, relatedto, populate!, popular
 
 end
