@@ -34,7 +34,7 @@ end
 
 function tojulia(α::List)
     if isa(car(α), Keyword)
-        Expr(Symbol(car(α).sym), (tojulia ∘ cdr(α))...)
+        Expr(Symbol(car(α).sym), (tojulia ⊚ cdr(α))...)
     elseif car(α) == :.
         if length(α) == 3
             Expr(:., tojulia(α[2]), QuoteNode(tojulia(α[3])))
@@ -52,9 +52,9 @@ function tojulia(α::List)
     elseif car(α) == :quasiquote
         quasiquote(cadr(α))
     elseif haskey(_IMPLICIT_KEYWORDS, car(α))
-        Expr(_IMPLICIT_KEYWORDS[car(α)], (tojulia ∘ cdr(α))...)
+        Expr(_IMPLICIT_KEYWORDS[car(α)], (tojulia ⊚ cdr(α))...)
     else
-        Expr(:call, (tojulia ∘ α)...)
+        Expr(:call, (tojulia ⊚ α)...)
     end
 end
 

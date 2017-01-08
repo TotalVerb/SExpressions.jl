@@ -7,11 +7,10 @@ else
     import Base.flatten
 end
 
-export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify, ∘,
-       append, ++, flatten, take, drop
+const ⊚ = Base.map
 
-f ∘ g::Function = x -> f(g(x))
-f ∘ g           = map(f, g)
+export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
+       append, ++, flatten, take, drop, ⊚
 
 lispify(x) = x
 lispify(::Void) = nil
@@ -33,7 +32,7 @@ cadr(α::Cons) = car(cdr(α))
 cddr(α::Cons) = cdr(cdr(α))
 
 Base.map(f, ::Nil) = nil
-Base.map(f, α::Cons) = Cons(f(car(α)), f ∘ cdr(α))
+Base.map(f, α::Cons) = Cons(f(car(α)), f ⊚ cdr(α))
 
 Base.:(==)(α::Cons, β::Cons) = car(α) == car(β) && cdr(α) == cdr(β)
 
@@ -57,7 +56,7 @@ Base.length(α::Cons) = 1 + length(cdr(α))
 Base.getindex(α::Nil, b) = throw(BoundsError(α, b))
 Base.getindex(α::Cons, b) = b == 1 ? car(α) : cdr(α)[b - 1]
 
-unparse(α::List) = "(" * join(unparse ∘ α, " ") * ")"
+unparse(α::List) = "(" * join(unparse ⊚ α, " ") * ")"
 unparse(s::Symbol) = string(s)
 unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
