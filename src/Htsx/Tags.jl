@@ -24,4 +24,17 @@ function relatedto(m::TagMatrix, t)
     take(top, 5)
 end
 
+function populate!(m::TagMatrix, tags, value)
+    for tag in tags
+        m.popularity[tag] += value
+        for tag2 in tags
+            if tag2 > tag
+                m.correlation[(tag, tag2)] += value
+            end
+        end
+    end
+end
+
+export TagMatrix, joint, relatedto, populate!
+
 end
