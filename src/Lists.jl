@@ -1,16 +1,12 @@
 @reexport module Lists
 
 import FunctionalCollections: append
-if VERSION ≥ v"0.6.0-"
-    using Base.Iterators
-else
-    import Base.flatten
-end
+using Base.Iterators
 
 const ⊚ = Base.map
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
-       append, ++, flatten, take, drop, ⊚, take
+       append, ++, ⊚
 
 lispify(x) = x
 lispify(::Void) = nil

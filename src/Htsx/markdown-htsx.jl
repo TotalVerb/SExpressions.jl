@@ -1,5 +1,6 @@
 module MarkdownHtsx
 
+using Base.Iterators
 using ...Lists
 
 render(md::Base.Markdown.MD)::List = flatten(render(x) for x in md.content)

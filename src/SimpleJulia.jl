@@ -2,6 +2,7 @@ module SimpleJulia
 
 export tojulia
 
+using Base.Iterators
 using ..Lists
 using ..Keywords
 

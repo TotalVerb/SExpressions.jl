@@ -2,6 +2,7 @@
 
 module Parser
 
+using Base.Iterators
 using ..Lists
 using ..Keywords
 

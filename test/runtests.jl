@@ -1,5 +1,6 @@
 using SExpressions
 using Base.Test
+using Base.Iterators
 
 @testset "Parser" begin
 

@@ -1,5 +1,6 @@
 module StdLib
 
+using Base.Iterators
 import ..MarkdownHtsx.render
 
 rendermd(x) = render(Base.Markdown.parse(x))

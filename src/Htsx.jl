@@ -15,11 +15,11 @@ function makeenv(ass=Dict(), modules=[])
     Env = Module(gensym(:Env))
     eval(Env, quote
         using Compat
+        using Base.Iterators
         using SExpressions.Lists
         using SExpressions.Keywords
         using SExpressions.SimpleJulia
         import SExpressions.Htsx.StdLib
-        import SExpressions.Lists.take
         using Hiccup
     end)
     for (k, v) in ass
