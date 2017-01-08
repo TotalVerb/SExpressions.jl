@@ -15,8 +15,8 @@ immutable TagMatrix
     popularity::DefaultDict{String,Int,Int}
     correlation::DefaultDict{Tuple{String,String},Int,Int}
     TagMatrix() = new(
-        DefaultDict(String, Int, 0),
-        DefaultDict(Tuple{String,String}, Int, 0))
+        DefaultDict{String, Int}(0),
+        DefaultDict{Tuple{String,String}, Int}(0))
 end
 
 joint(m::TagMatrix, t1, t2) = m.correlation[tuple(sort([t1, t2])...)]
