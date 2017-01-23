@@ -29,6 +29,10 @@ cddr(α::Cons) = cdr(cdr(α))
 
 Base.map(f, ::Nil) = nil
 Base.map(f, α::Cons) = Cons(f(car(α)), f ⊚ cdr(α))
+Base.filter(p, ::Nil) = nil
+Base.filter(p, α::Cons) = let β = filter(p, cdr(α))
+    p(car(α)) ? Cons(car(α), β) : β
+end
 
 Base.:(==)(α::Cons, β::Cons) = car(α) == car(β) && cdr(α) == cdr(β)
 

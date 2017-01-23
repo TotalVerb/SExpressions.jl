@@ -2,7 +2,7 @@ using SExpressions
 using Base.Test
 using Base.Iterators
 
-@testset "Parser" begin
+Base.Test.print_test_results(@testset "Parser" begin
 
 @test sx"(+ 1 1)" == List(:(+), 1, 1)
 @test sx"""
@@ -14,16 +14,18 @@ using Base.Iterators
 
 @test isa(SExpressions.parsefile("data/scheme.jl"), List)
 
-end
+end)
 
-@testset "Lists" begin
+Base.Test.print_test_results(@testset "Lists" begin
 
+@test filter(iseven, List(1, 2, 3)) == List(2)
+@test filter(!iseven, List(1, 2, 3)) == List(1, 3)
 @test List(1, 2, 3) ++ List(4, 5, 6) == List(1, 2, 3, 4, 5, 6)
 @test append(List(1), List(2), List(3)) == List(1, 2, 3)
 
-end
+end)
 
-@testset "Julia" begin
+Base.Test.print_test_results(@testset "Julia" begin
 
 @test SExpressions.SimpleJulia.tojulia(sx"(+ 1 1)") == :(1 + 1)
 @test SExpressions.SimpleJulia.tojulia(sx"""
@@ -74,6 +76,6 @@ end
     @test evaluate(sx"(. Base Markdown MD)") === Base.Markdown.MD
 end
 
-end
+end)
 
 include("htsx.jl")
