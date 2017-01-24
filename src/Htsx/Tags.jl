@@ -48,7 +48,7 @@ joint(m::TagMatrix, t1, t2) = m.correlation[tuple(sort([t1, t2])...)]
 Return up to the top `num` tags related to `tag`.
 """
 function relatedto(m::TagMatrix, t, num=8)
-    top = [(tag, joint(m, t, tag) / (m.popularity[tag] + 2))
+    top = [(tag, joint(m, t, tag)^2 / (popularity(m, tag) + 2))
            for tag in tags(m) if tag != t]
     filter!(x -> x[2] > 0, top)
     sort!(top, by=x -> -x[2])
