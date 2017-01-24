@@ -4,14 +4,13 @@
 
 ## Philosophy
 
-The proliferation of markup and data interchange formats is a huge mistake. The
-world would be a simpler and easier place if everyone just used s-expressions.
+The world would be a simpler and easier place if everyone just used
+s-expressions.
 
 ## Requirements
 
 This package is not yet listed. Install at your own peril. It also requires a
-master Julia for now... though 0.4 support is not impossible and will come when
-`Compat.jl` includes some `IOContext` features.
+master Julia.
 
 ## Parsing and pretty-printing
 
@@ -75,6 +74,11 @@ htsx"""
     (p "This is an example of the " (code "@htsx_str") " string macro."))
 """
 ```
+
+## Julia
+
+The package provides a simple (undocumented) Julia syntax based off
+s-expressions.
 
 ## Internals
 
