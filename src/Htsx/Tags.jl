@@ -92,6 +92,6 @@ function populate!(m::TagMatrix, tags, value)
     end
 end
 
-export TagMatrix, joint, relatedto, populate!, popular
+export TagMatrix, joint, relatedto, populate!, popular, subtags
 
 end
