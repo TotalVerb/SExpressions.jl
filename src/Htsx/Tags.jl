@@ -49,10 +49,30 @@ Return up to the top `num` tags related to `tag`.
 """
 function relatedto(m::TagMatrix, t, num=8)
     top = [(tag, joint(m, t, tag) / (m.popularity[tag] + 2))
-           for tag in keys(m.popularity) if tag != t]
+           for tag in tags(m) if tag != t]
     filter!(x -> x[2] > 0, top)
     sort!(top, by=x -> -x[2])
     take(top, num)
+end
+
+"""
+    issubtag(m::TagMatrix, a, b)
+
+Return `true` if `a` is a subtag of `b`. A tag `a` is defined to be a subtag of
+`b` if at least 80% of items tagged with `a`, plus two, are also tagged with
+`b`.
+"""
+issubtag(m::TagMatrix, a, b) = joint(m, a, b) <= 0.8 * popularity(m, a) + 2
+
+"""
+    subtags(m::TagMatrix, tag)
+
+Return all subtags of this tag, in order of size.
+"""
+function subtags(m::TagMatrix, t)
+    result = [tag for tag in tags(m) if tag != t && issubtag(m, tag, t)]
+    sort!(result, by=x -> popularity(m, x); rev=true)
+    result
 end
 
 """
