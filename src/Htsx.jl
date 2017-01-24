@@ -86,7 +86,9 @@ function gethiccupnode(head::Keyword, ρ, state)
     elseif head == Keyword("var")
         evaluate!(state, car(ρ)), state
     elseif head == Keyword("execute")
-        evaluate!(state, car(ρ))
+        for ς in ρ
+            evaluate!(state, ς)
+        end
         html"", state
     elseif head == Keyword("when")
         cond = car(ρ)
