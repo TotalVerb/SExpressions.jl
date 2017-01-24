@@ -6,7 +6,7 @@ using Base.Iterators
 const ⊚ = Base.map
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
-       append, ++, ⊚
+       append, ++, ⊚, cons, list
 
 lispify(x) = x
 lispify(::Void) = nil
@@ -20,6 +20,7 @@ immutable Cons
     car
     cdr
 end
+const cons = Cons
 
 car(α::Cons) = α.car
 cdr(α::Cons) = α.cdr
@@ -40,6 +41,7 @@ typealias List Union{Cons, Nil}
 
 List() = nil
 List(xs...) = Cons(lispify(xs[1]), List(xs[2:end]...))
+const list = List
 
 isnil(::Nil) = true
 isnil(::Cons) = false
