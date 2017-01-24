@@ -85,6 +85,9 @@ function gethiccupnode(head::Keyword, ρ, state)
         tohiccup(evaluate!(state, :($(car(ρ))($(cdr(ρ)...)))), state)
     elseif head == Keyword("var")
         evaluate!(state, car(ρ)), state
+    elseif head == Keyword("execute")
+        evaluate!(state, car(ρ))
+        html"", state
     elseif head == Keyword("when")
         cond = car(ρ)
         if evaluate!(state, cond)
