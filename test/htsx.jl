@@ -1,4 +1,4 @@
-Base.Test.print_test_results(@testset "HTSX" begin
+@testset "HTSX" begin
 
 @test sx"""
 (html ([lang "en"])
@@ -99,4 +99,4 @@ end
 <p>my <a href="http://example.com">link to</a></p>"""
 end
 
-end)
+end
