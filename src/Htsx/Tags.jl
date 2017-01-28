@@ -59,11 +59,11 @@ end
     issubtag(m::TagMatrix, a, b)
 
 Return `true` if `a` is a subtag of `b`. A tag `a` is defined to be a subtag of
-`b` if at least 80% of items tagged with `a`, plus one, are also tagged with
+`b` if at least 75% of items tagged with `a`, plus 0.75, are also tagged with
 `b`, or if `a == b`.
 """
 issubtag(m::TagMatrix, a, b) = a == b ||
-    joint(m, a, b) >= 0.8 * popularity(m, a) + 1
+    joint(m, a, b) >= 0.75 * popularity(m, a) + 0.75
 
 """
     subtags(m::TagMatrix, tag)
