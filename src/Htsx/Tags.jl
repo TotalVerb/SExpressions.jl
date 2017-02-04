@@ -72,7 +72,7 @@ Return all subtags of this tag, in order of size.
 """
 function subtags(m::TagMatrix, t)
     result = [tag for tag in tags(m) if tag != t && issubtag(m, tag, t)]
-    sort!(result, by=x -> popularity(m, x); rev=true)
+    sort!(result; by=x -> popularity(m, x), rev=true)
     result
 end
 
