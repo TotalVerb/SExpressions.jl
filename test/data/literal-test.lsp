@@ -1,1 +1,1 @@
-(script (#:file "literal.js"))
+(script (include "literal.js" #:text))

@@ -99,4 +99,10 @@ end
 <p>my <a href="http://example.com">link to</a></p>"""
 end
 
+@testset "Object Include" begin
+@test Htsx.tohtml("data/object-include.lsp") == """
+<!DOCTYPE html>
+<p>Hello, World!</p>"""
+end
+
 end

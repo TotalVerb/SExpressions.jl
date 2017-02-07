@@ -61,12 +61,34 @@ function acc2(f, xs, acc)
     res, acc
 end
 
+function handleinclude(obj, kind::Keyword, state)
+    if kind == Keyword("object")
+        data = evaluate!(state, obj)
+        tohiccup(data, state)
+    elseif kind == Keyword("text")
+        url = evaluate!(state, obj)
+        file = relativeto(state, url)
+        readstring(file), state
+    else
+        error("Unknown included object type $state")
+    end
+end
+
+function handleinclude(ρ, state)
+    if length(ρ) ≠ 2
+        error("include must take exactly two arguments")
+    end
+    handleinclude(car(ρ), cadr(ρ), state)
+end
+
 function gethiccupnode(head, ρ, state)
     error("Invalid HTSX head: $head")
 end
 
 function gethiccupnode(head::Symbol, ρ, state)
-    if isnil(ρ)
+    if head == :include
+        handleinclude(ρ, state)
+    elseif isnil(ρ)
         Node(head, Dict(), []), state
     else
         if islisty(car(ρ))  # is a list of attrs
@@ -105,9 +127,11 @@ function gethiccupnode(head::Keyword, ρ, state)
         res, state = tohiccups(α, state)
         HTML(sprint(show_html, res)), state
     elseif head == Keyword("file")
-        url = evaluate!(state, car(ρ))
-        file = relativeto(state, url)
-        readstring(file), state
+        Base.depwarn(string(
+            "#:file is deprecated; use (include $(repr(car(ρ))) ",
+            "#:text) instead"),
+            :file)
+        handleinclude(car(ρ), Keyword("text"), state)
     elseif head == Keyword("each")
         var, array, code = ρ
         doms = eval(state.env, quote
