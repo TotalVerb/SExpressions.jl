@@ -65,6 +65,11 @@ function handleinclude(obj, kind::Keyword, state)
     if kind == Keyword("object")
         data = evaluate!(state, obj)
         tohiccup(data, state)
+    elseif kind == Keyword("markdown")
+        url = evaluate!(state, obj)
+        file = relativeto(state, url)
+        data = stringmime("text/html", Base.Markdown.parse(readstring(file)))
+        HTML(data), state
     elseif kind == Keyword("text")
         url = evaluate!(state, obj)
         file = relativeto(state, url)
@@ -146,10 +151,11 @@ function gethiccupnode(head::Keyword, ρ, state)
         end
         HTML(String(take!(f))), state
     elseif head == Keyword("markdown")
-        url = evaluate!(state, car(ρ))
-        file = relativeto(state, url)
-        data = stringmime("text/html", Base.Markdown.parse(readstring(file)))
-        HTML(data), state
+        Base.depwarn(string(
+            "#:markdown is deprecated; use (include $(repr(car(ρ))) ",
+            "#:markdown) instead"),
+            :file)
+        handleinclude(car(ρ), Keyword("markdown"), state)
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)

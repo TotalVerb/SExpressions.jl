@@ -1,2 +1,3 @@
-(#:each x (List "my [link to](http://example.com)")
-  `(,((. StdLib rendermd) x)))
+(include
+  ((. StdLib rendermd) "my [link to](http://example.com)")
+  #:object)
