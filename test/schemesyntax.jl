@@ -1,5 +1,6 @@
 using SExpressions.Lists
 using SExpressions.RacketExtensions
+using SExpressions.R5RS
 
 @testset "Scheme Syntax" begin
 
@@ -12,11 +13,15 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
 
 @test evaluate(sx"'x") == :x
 @test evaluate(sx"`(+ 1 1)") == List(:+, 1, 1)
-@test evaluate(sx"""
-(begin
-  (= x 2)
-  `(+ ,x x))
-""") == List(:+, 2, :x)
+
+@testset "set!" begin
+    @test evaluate(sx"""
+    (begin
+      (define x 1)
+      (set! x 2)
+      `(+ ,x x))
+    """) == List(:+, 2, :x)
+end
 
 @test evaluate(sx"""
 (begin

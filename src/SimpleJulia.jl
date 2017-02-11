@@ -8,7 +8,7 @@ using ..Keywords
 
 tojulia(x) = x
 function tojulia(x::Symbol)
-    xstr = string(x)
+    xstr = replace(string(x), '-', '_')
     Symbol(xstr[end] == '?' ? "is" * xstr[1:end-1] : xstr)
 end
 
@@ -22,8 +22,11 @@ const _IMPLICIT_KEYWORDS = Dict(
     :or => :(||),
     :ref => :ref)
 const _IMPLICIT_MACROS = Dict(
+    # racket
     :when => Symbol("@when"),
-    :unless => Symbol("@unless"))
+    :unless => Symbol("@unless"),
+    # r5rs
+    :set! => Symbol("@set!"))
 
 quasiquote(x) = x
 quasiquote(x::Symbol) = Meta.quot(x)

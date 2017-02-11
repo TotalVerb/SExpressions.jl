@@ -19,6 +19,8 @@ function makeenv(ass=Dict(), modules=[])
         using SExpressions.Lists
         using SExpressions.Keywords
         using SExpressions.SimpleJulia
+        using SExpressions.RacketExtensions
+        using SExpressions.R5RS
         import SExpressions.Htsx.StdLib
         using Hiccup
     end)
