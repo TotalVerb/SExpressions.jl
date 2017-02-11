@@ -18,7 +18,6 @@ const _IMPLICIT_KEYWORDS = Dict(
     :while => :while,
     :begin => :block,
     :(::) => :(::),
-    :define => :function,
     :and => :(&&),
     :or => :(||),
     :ref => :ref)
@@ -42,8 +41,13 @@ function tojulia(α::List)
         else
             tojulia(List(:., List(:., α[2], α[3]), drop(α, 3)...))
         end
-    elseif car(α) == :λ
+    elseif car(α) ∈ [:λ, :lambda]
         Expr(:->, Expr(:tuple, α[2]...), tojulia(α[3]))
+    elseif car(α) == :define
+        if length(α) ≠ 3
+            throw(LoadError("incorrect define syntax; must be (define x y)"))
+        end
+        :($(tojulia(α[2])) = $(tojulia(α[3])); nothing)
     elseif car(α) == :let
         Expr(:let,
              tojulia(α[3]),
