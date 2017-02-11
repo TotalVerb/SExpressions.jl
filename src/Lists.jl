@@ -10,6 +10,7 @@ export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
 
 lispify(x) = x
 lispify(::Void) = nil
+lispify(b::Bool) = b
 lispify(i::Integer) = BigInt(i)
 lispify(t::Tuple) = isempty(t) ? nil : Cons(lispify(t[1]), lispify(t[2:end]))
 

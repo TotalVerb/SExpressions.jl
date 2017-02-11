@@ -32,12 +32,27 @@ end
 
 @test evaluate(sx"((. Base +) 1 2)") == 3
 
-@test evaluate(sx"(and #t #t)")
-@test !evaluate(sx"(and #t #f)")
-@test !evaluate(sx"(and #f #f)")
-@test evaluate(sx"(or #t #t)")
-@test evaluate(sx"(or #t #f)")
-@test !evaluate(sx"(or #f #f)")
+for (sym, fn) in [[:and, &], [:or, |]]
+    @testset "$sym" begin
+        for a in [false, true]
+            for b in [false, true]
+                @test evaluate(list(sym, a, b)) == fn(a, b)
+            end
+        end
+    end
+end
+
+@testset "not" begin
+    @test evaluate(sx"(not #f)")
+    @test !evaluate(sx"(not #t)")
+    @test !evaluate(sx"(not 1)")
+end
+
+@testset "boolean?" begin
+    @test evaluate(sx"(boolean? #t)")
+    @test evaluate(sx"(boolean? #f)")
+    @test !evaluate(sx"(boolean? 10)")
+end
 
 @test evaluate(sx"(ref (List 1 2 3) 2)") == 2
 
