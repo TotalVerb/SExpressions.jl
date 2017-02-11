@@ -21,6 +21,9 @@ const _IMPLICIT_KEYWORDS = Dict(
     :and => :(&&),
     :or => :(||),
     :ref => :ref)
+const _IMPLICIT_MACROS = Dict(
+    :when => Symbol("@when"),
+    :unless => Symbol("@unless"))
 
 quasiquote(x) = x
 quasiquote(x::Symbol) = Meta.quot(x)
@@ -58,6 +61,8 @@ function tojulia(α::List)
         quasiquote(cadr(α))
     elseif haskey(_IMPLICIT_KEYWORDS, car(α))
         Expr(_IMPLICIT_KEYWORDS[car(α)], (tojulia ⊚ cdr(α))...)
+    elseif haskey(_IMPLICIT_MACROS, car(α))
+        Expr(:macrocall, _IMPLICIT_MACROS[car(α)], (tojulia ⊚ cdr(α))...)
     else
         Expr(:call, (tojulia ⊚ α)...)
     end

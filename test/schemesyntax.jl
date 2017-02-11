@@ -1,3 +1,6 @@
+using SExpressions.Lists
+using SExpressions.RacketExtensions
+
 @testset "Scheme Syntax" begin
 
 @test SExpressions.SimpleJulia.tojulia(sx"(+ 1 1)") == :(1 + 1)
@@ -63,6 +66,19 @@ end
     @test evaluate(sx"(define (f x) 1)") == nothing
     @test evaluate(sx"(begin (define (f x) 1) (f 0))") == 1
     @test evaluate(sx"(begin (define (f x) x) (f 0))") == 0
+end
+
+@testset "when" begin
+    @test evaluate(sx"(when #t (+ 1 1))") == 2
+    @test evaluate(sx"(when #f (+ 1 1))") == nothing
+    @test evaluate(sx"(when #t (cons 'x nil))") == cons(:x, nil)
+    @test evaluate(sx"(when #f (cons 'x nil))") == nothing
+    @test evaluate(sx"(when (== 1 2) (+ 1 1))") == nothing
+    @test evaluate(sx"(when (< 1 2) (+ 1 1))") == 2
+end
+@testset "unless" begin
+    @test evaluate(sx"(let ([x #f]) (unless x 1))") == 1
+    @test evaluate(sx"(let ([x #t]) (unless x 1))") == nothing
 end
 
 end

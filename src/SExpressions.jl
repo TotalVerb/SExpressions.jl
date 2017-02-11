@@ -4,6 +4,7 @@ using Reexport
 include("Lists.jl")
 include("Keywords.jl")
 include("SimpleJulia.jl")
+include("RacketExtensions.jl")
 include("Parser.jl")
 include("Htsx.jl")
 
