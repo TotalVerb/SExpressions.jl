@@ -70,6 +70,12 @@ function handleinclude(obj, kind::Keyword, state)
         file = relativeto(state, url)
         data = stringmime("text/html", Base.Markdown.parse(readstring(file)))
         HTML(data), state
+    elseif kind == Keyword("remark")
+        url = evaluate!(state, obj)
+        file = relativeto(state, url)
+        α = Parser.parsefile(file)
+        res, state = tohiccups(α, state)
+        HTML(sprint(show_html, res)), state
     elseif kind == Keyword("text")
         url = evaluate!(state, obj)
         file = relativeto(state, url)
@@ -126,11 +132,11 @@ function gethiccupnode(head::Keyword, ρ, state)
             html"", state
         end
     elseif head == Keyword("include")
-        url = evaluate!(state, car(ρ))
-        file = relativeto(state, url)
-        α = Parser.parsefile(file)
-        res, state = tohiccups(α, state)
-        HTML(sprint(show_html, res)), state
+        Base.depwarn(string(
+            "#:include is deprecated; use (include $(repr(car(ρ))) ",
+            "#:remark) instead"),
+            :file)
+        handleinclude(car(ρ), Keyword("remark"), state)
     elseif head == Keyword("file")
         Base.depwarn(string(
             "#:file is deprecated; use (include $(repr(car(ρ))) ",
