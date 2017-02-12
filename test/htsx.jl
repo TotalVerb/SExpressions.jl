@@ -29,6 +29,7 @@
 <!DOCTYPE html>
 <html lang="en"><title>10000</title><p>test</p></html>"""
 
+@testset "When" begin
 @test htsx"""
 (#:when (defined? 'x)
   (p "yes 1"))
@@ -38,6 +39,19 @@
 """ == """
 <!DOCTYPE html>
 <p>yes 2</p>"""
+
+@test htsx"""
+(p (include (when (< 1 2) (define x 1) (+ x x)) #:object))
+""" == """
+<!DOCTYPE html>
+<p>2</p>"""
+
+@test htsx"""
+(p (include (when (> 1 2) "Hello") #:object))
+""" == """
+<!DOCTYPE html>
+<p></p>"""
+end
 
 @test htsx"""
 (#:execute

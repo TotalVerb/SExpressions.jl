@@ -63,6 +63,7 @@ unparse(α::List) = "(" * join(unparse ⊚ α, " ") * ")"
 unparse(s::Symbol) = string(s)
 unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
+unparse(::Void) = "#<void>"
 
 Base.convert(::Type{List}, xs) = List(xs...)
 append(::Nil, β::List) = β

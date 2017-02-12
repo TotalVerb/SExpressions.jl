@@ -11,6 +11,8 @@ using FunctionalCollections
 include("Htsx/markdown-htsx.jl")
 include("Htsx/stdlib.jl")
 
+typealias ListOrArray Union{List, Array}
+
 function makeenv(ass=Dict(), modules=[])
     Env = Module(gensym(:Env))
     eval(Env, quote
@@ -76,8 +78,7 @@ function handleinclude(obj, kind::Keyword, state)
         url = evaluate!(state, obj)
         file = relativeto(state, url)
         α = Parser.parsefile(file)
-        res, state = tohiccups(α, state)
-        HTML(sprint(show_html, res)), state
+        acc2(tohiccup, α, state)
     elseif kind == Keyword("text")
         url = evaluate!(state, obj)
         file = relativeto(state, url)
@@ -93,6 +94,10 @@ function handleinclude(ρ, state)
     end
     handleinclude(car(ρ), cadr(ρ), state)
 end
+
+flattentree(::Void) = []
+flattentree(xs::ListOrArray) = vcat((flattentree(x) for x in xs)...)
+flattentree(x) = Any[x]
 
 function gethiccupnode(head, ρ, state)
     error("Invalid HTSX head: $head")
@@ -111,7 +116,8 @@ function gethiccupnode(head::Symbol, ρ, state)
             attrs = Dict()
             content, state = acc2(tohiccup, ρ, state)
         end
-        Node(head, attrs, collect(content)), state
+        children = flattentree(content)
+        Node(head, attrs, children), state
     end
 end
 
@@ -124,14 +130,13 @@ function gethiccupnode(head::Keyword, ρ, state)
         for ς in ρ
             evaluate!(state, ς)
         end
-        html"", state
+        nothing, state
     elseif head == Keyword("when")
         cond = car(ρ)
         if evaluate!(state, cond)
-            res, state = tohiccups(cdr(ρ), state)
-            HTML(sprint(show_html, res)), state
+            acc2(tohiccup, cdr(ρ), state)
         else
-            html"", state
+            nothing, state
         end
     elseif head == Keyword("include")
         Base.depwarn(string(
@@ -152,12 +157,12 @@ function gethiccupnode(head::Keyword, ρ, state)
                 $(tojulia(code))
             end
         end)
-        f = IOBuffer()
+        objects = []
         for dom in doms
-            res, state = tohiccups(dom, state)
-            show_html(f, res)
+            res, state = acc2(tohiccup, dom, state)
+            push!(objects, res)
         end
-        HTML(String(take!(f))), state
+        objects, state
     elseif head == Keyword("markdown")
         Base.depwarn(string(
             "#:markdown is deprecated; use (include $(repr(car(ρ))) ",
@@ -172,7 +177,7 @@ function gethiccupnode(head::Keyword, ρ, state)
         newfn = eval(state.env,
             Expr(:function, Expr(:call, fn.args...),
             tojulia(cadr(ρ))))
-        html"", state  # nothing value
+        nothing, state  # nothing value
     else
         error("Unsupported HTSX keyword $head")
     end
@@ -191,19 +196,9 @@ end
 tohiccup(s::String, state) = s, state
 tohiccup(s::AbstractString, state) = tohiccup(String(s), state)
 tohiccup(i::BigInt, state) = string(i), state
+tohiccup(::Void, state) = nothing, state
 
 tohiccup(x, state) = error("Can’t serialize $(repr(x))")
-
-typealias ListOrArray Union{List, Array}
-
-function tohiccups(α::ListOrArray, state::HtsxState)
-    parts = []
-    for β in α
-        res, state = tohiccup(β, state)
-        push!(parts, res)
-    end
-    parts, state
-end
 
 function show_html(io::IO, ashiccup)
     join(io, (stringmime("text/html", p) for p in ashiccup))
@@ -214,8 +209,8 @@ function tohtml(io::IO, α::List, tmpls=PersistentHashMap{Symbol,Any}();
                 modules=[])
     println(io, "<!DOCTYPE html>")
     state = HtsxState(makeenv(tmpls, modules), file)
-    ashiccup, _ = tohiccups(α, state)
-    show_html(io, ashiccup)
+    ashiccup, _ = acc2(tohiccup, α, state)
+    show_html(io, flattentree(ashiccup))
 end
 
 function tohtml(io::IO, f::AbstractString,

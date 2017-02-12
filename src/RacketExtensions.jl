@@ -12,4 +12,10 @@ end
 
 export @when, @unless
 
+# void
+# http://docs.racket-lang.org/guide/void_undefined.html
+void(xs...) = nothing
+
+export void
+
 end
