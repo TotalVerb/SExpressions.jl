@@ -42,6 +42,13 @@ immutable HtsxState
 end
 getvar(s::HtsxState, v::Symbol) = getfield(s.env, v)
 evaluate!(s::HtsxState, ex) = eval(s.env, tojulia(ex))
+function evaluateall!(state, ρ)
+    local data
+    for α in ρ
+        data = evaluate!(state, α)
+    end
+    data
+end
 relativeto(s::HtsxState, f) = joinpath(dirname(s.file), f)
 
 setindex(x, y, z) = assoc(x, z, y)
@@ -95,6 +102,20 @@ function handleinclude(ρ, state)
     handleinclude(car(ρ), cadr(ρ), state)
 end
 
+function handleremark(ρ, state)
+    if isempty(ρ)
+        error("remark requires a nonempty body expression")
+    end
+    tohiccup(evaluateall!(state, ρ), state)
+end
+
+function handleremarks(ρ, state)
+    if isempty(ρ)
+        error("remarks requires a nonempty body expression")
+    end
+    acc2(tohiccup, evaluateall!(state, ρ), state)
+end
+
 flattentree(::Void) = []
 flattentree(xs::ListOrArray) = vcat((flattentree(x) for x in xs)...)
 flattentree(x) = Any[x]
@@ -106,6 +127,10 @@ end
 function gethiccupnode(head::Symbol, ρ, state)
     if head == :include
         handleinclude(ρ, state)
+    elseif head == :remark
+        handleremark(ρ, state)
+    elseif head == :remarks
+        handleremarks(ρ, state)
     elseif isnil(ρ)
         Node(head, Dict(), []), state
     else
@@ -125,6 +150,10 @@ function gethiccupnode(head::Keyword, ρ, state)
     if head == Keyword("template")
         tohiccup(evaluate!(state, :($(car(ρ))($(cdr(ρ)...)))), state)
     elseif head == Keyword("var")
+        Base.depwarn(string(
+            "#:var is deprecated; use (remark $(repr(car(ρ)))) ",
+            "instead"),
+            :var)
         evaluate!(state, car(ρ)), state
     elseif head == Keyword("execute")
         for ς in ρ
@@ -142,7 +171,7 @@ function gethiccupnode(head::Keyword, ρ, state)
         Base.depwarn(string(
             "#:include is deprecated; use (include $(repr(car(ρ))) ",
             "#:remark) instead"),
-            :file)
+            :include)
         handleinclude(car(ρ), Keyword("remark"), state)
     elseif head == Keyword("file")
         Base.depwarn(string(
@@ -167,7 +196,7 @@ function gethiccupnode(head::Keyword, ρ, state)
         Base.depwarn(string(
             "#:markdown is deprecated; use (include $(repr(car(ρ))) ",
             "#:markdown) instead"),
-            :file)
+            :markdown)
         handleinclude(car(ρ), Keyword("markdown"), state)
     elseif head == Keyword("define")
         fn = tojulia(car(ρ))

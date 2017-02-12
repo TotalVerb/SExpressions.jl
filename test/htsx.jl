@@ -53,10 +53,11 @@
 <p></p>"""
 end
 
+@testset "Remark" begin
 @test htsx"""
 (#:execute
   (define x "Hello, World"))
-(p (#:var (string x "!")))
+(p (remark (string x "!")))
 """ == """
 <!DOCTYPE html>
 <p>Hello, World!</p>"""
@@ -65,10 +66,29 @@ end
 (#:execute
   (define x "Hello, ")
   (define y "World"))
-(p (#:var (string x y "!")))
+(p (remark (string x y "!")))
 """ == """
 <!DOCTYPE html>
 <p>Hello, World!</p>"""
+
+@test htsx"""
+(#:define (foo x) 0)
+(p (remark (foo 1)))
+""" == """
+<!DOCTYPE html>
+<p>0</p>"""
+end
+
+@testset "Remarks" begin
+@test htsx"""
+(remarks
+ (define n 7000000000)
+ `((p "Hello World")
+   (p "All " ,n " are welcome!")))
+""" == """
+<!DOCTYPE html>
+<p>Hello World</p><p>All 7000000000 are welcome!</p>"""
+end
 
 @test Htsx.tohtml("data/file1.lsp") == """
 <!DOCTYPE html>
@@ -77,13 +97,6 @@ end
 @test Htsx.tohtml("data/test-dispatch.lsp") == """
 <!DOCTYPE html>
 <p>12</p>"""
-
-@test htsx"""
-(#:define (foo x) 0)
-(p (#:var (string (foo 1))))
-""" == """
-<!DOCTYPE html>
-<p>0</p>"""
 
 @test Htsx.tohtml("data/test-markdown.lsp") == """
 <!DOCTYPE html>
