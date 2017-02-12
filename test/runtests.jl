@@ -12,7 +12,13 @@ using Base.Iterators
         (:sqr, :x),
         (:(^), :x, 2)))
 
-@test isa(SExpressions.parsefile("data/scheme.scm"), List)
+@test SExpressions.parsefile("data/scheme.scm") isa List
+
+@test_throws ErrorException SExpressions.parses("(+ 1 1")
+@test_throws ErrorException SExpressions.parses("(+ 1 1]")
+@test_throws ErrorException SExpressions.parses("(+ 1 1))")
+@test_throws ErrorException SExpressions.parses("(+ 1 1;)")
+@test sx"1;" == 1
 
 end
 

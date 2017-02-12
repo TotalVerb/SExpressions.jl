@@ -91,11 +91,12 @@ Parse a list at the given index.
 """
 function parse(::Type{List}, s::AbstractString, i, c)
     i = skipws(s, i)
-    i > endof(s) && error("What kind of s-expression is this?")
-    if s[i] == c
+    if i > endof(s)
+        error("Missing $c at end of file.")
+    elseif s[i] == c
         nextind(s, i), nil
     elseif s[i] in (')', ']', '}')
-        error("I don't think this is the right closing character.")
+        error("Mismatched parentheses; expected $c found $(s[i]).")
     else
         i, ele = parse(s, i)
         i = skipws(s, i)
@@ -105,42 +106,53 @@ function parse(::Type{List}, s::AbstractString, i, c)
     end
 end
 
+function tryparse(s::AbstractString, i)
+    i = skipws(s, i)
+    if i > endof(s)
+        i, Nullable{Any}()
+    elseif s[i] in ('(', '[', '{')
+        i, res = parse(List, s, nextind(s, i), close(s[i]))
+        i, Nullable{Any}(res)
+    elseif s[i] in (')', ']', '}')
+        error("Unexpected extraneous $(s[i]).")
+    elseif s[i] == '"'
+        i, res = parse(String, s, nextind(s, i), close(s[i]))
+        i, Nullable{Any}(res)
+    elseif s[i] == ';'
+        i = skipline(s, i)
+        tryparse(s, i)
+    elseif haskey(_READER_MACROS, s[i])
+        c = s[i]
+        i, ele = parse(s, nextind(s, i))
+        i, Nullable{Any}(List(_READER_MACROS[c], ele))
+    else
+        i, res = parse(Symbol, s, i)
+        i, Nullable{Any}(res)
+    end
+end
+
 """
 Parse an s-expression at the given index of the given AbstractString.
 """
 function parse(s::AbstractString, i)
-    i = skipws(s, i)
-    i > endof(s) && error("What kind of s-expression is this?")
-    if s[i] in ('(', '[', '{')
-        parse(List, s, nextind(s, i), close(s[i]))
-    elseif s[i] in (')', ']', '}')
-        error("I don't believe in these characters.")
-    elseif s[i] == '"'
-        parse(String, s, nextind(s, i), close(s[i]))
-    elseif s[i] == ';'
-        i = skipline(s, i)
-        parse(s, i)
-    elseif haskey(_READER_MACROS, s[i])
-        c = s[i]
-        i, ele = parse(s, nextind(s, i))
-        i, List(_READER_MACROS[c], ele)
+    i, res = tryparse(s, i)
+    if isnull(res)
+        error("Unexpected end of file.")
     else
-        parse(Symbol, s, i)
+        i, get(res)
     end
 end
-
 parse(s::AbstractString) = parse(s, 1)[2]
 
 """
 Parse an entire string into a single list.
 """
 function parses(s::AbstractString, i=1)
-    i = skipws(s, i)
-    if i > endof(s)
+    i, res = tryparse(s, i)
+    if isnull(res)
         nil
     else
-        i, ele = parse(s, i)
-        Cons(ele, parses(s, i))
+        Cons(get(res), parses(s, i))
     end
 end
 
