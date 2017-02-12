@@ -30,5 +30,4 @@ end
 
 end
 
-include("schemesyntax.jl")
 include("htsx.jl")

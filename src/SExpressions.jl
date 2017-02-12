@@ -1,11 +1,9 @@
 module SExpressions
+
 using Reexport
 
 include("Lists.jl")
 include("Keywords.jl")
-include("SimpleJulia.jl")
-include("RacketExtensions.jl")
-include("R5RS.jl")
 include("Parser.jl")
 include("Htsx.jl")
 
@@ -21,5 +19,7 @@ macro htsx_str(x::String)
 end
 
 export @sx_str, @htsx_str, Htsx
+using SchemeSyntax
+Base.@deprecate_binding SimpleJulia SchemeSyntax
 
 end  # module SExpressions

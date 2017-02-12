@@ -3,7 +3,7 @@ module Htsx
 using ..Parser
 using ..Lists
 using ..Keywords
-using ..SimpleJulia
+using SchemeSyntax
 using Compat
 using Hiccup
 using FunctionalCollections: PersistentHashMap
@@ -19,11 +19,10 @@ function makeenv(ass=Dict(), modules=[])
         using Base.Iterators
         using SExpressions.Lists
         using SExpressions.Keywords
-        using SExpressions.SimpleJulia
-        using SExpressions.RacketExtensions
-        using SExpressions.R5RS
+        using SchemeSyntax
+        using SchemeSyntax.RacketExtensions
+        using SchemeSyntax.R5RS
         import SExpressions.Htsx.StdLib
-        using Hiccup
     end)
     for (k, v) in ass
         eval(Env, :($k = $v))
