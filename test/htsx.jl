@@ -92,15 +92,15 @@ end
 <p>Hello World</p><p>All 7000000000 are welcome!</p>"""
 end
 
-@test Htsx.tohtml("data/file1.lsp") == """
+@test Htsx.tohtml("data/file1.rem") == """
 <!DOCTYPE html>
 <p>File 2: 100</p><p>File 1: 20</p>"""
 
-@test Htsx.tohtml("data/test-dispatch.lsp") == """
+@test Htsx.tohtml("data/test-dispatch.rem") == """
 <!DOCTYPE html>
 <p>12</p>"""
 
-@test Htsx.tohtml("data/test-markdown.lsp") == """
+@test Htsx.tohtml("data/test-markdown.rem") == """
 <!DOCTYPE html>
 <div><h1>Some Markdown</h1><p><strong>Test</strong>.</p></div>"""
 
@@ -114,20 +114,20 @@ end
 end
 
 @testset "Files" begin
-@test Htsx.tohtml("data/literal-test.lsp") == """
+@test Htsx.tohtml("data/literal-test.rem") == """
 <!DOCTYPE html>
 <script>alert(\"Hello, World!\");
 </script>"""
 end
 
 @testset "Markdown Render" begin
-@test Htsx.tohtml("data/markdown-render.lsp") == """
+@test Htsx.tohtml("data/markdown-render.rem") == """
 <!DOCTYPE html>
 <div><p>my <a href="http://example.com">link to</a></p></div>"""
 end
 
 @testset "Object Include" begin
-@test Htsx.tohtml("data/object-include.lsp") == """
+@test Htsx.tohtml("data/object-include.rem") == """
 <!DOCTYPE html>
 <p>Hello, World!</p>"""
 end
