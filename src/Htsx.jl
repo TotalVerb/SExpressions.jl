@@ -8,7 +8,6 @@ using Compat
 using Hiccup
 using FunctionalCollections: PersistentHashMap
 
-include("Htsx/markdown-htsx.jl")
 include("Htsx/stdlib.jl")
 
 typealias ListOrArray Union{List, Array}
@@ -79,8 +78,8 @@ function handleinclude(obj, kind::Keyword, state)
     elseif kind == Keyword("markdown")
         url = evaluate!(state, obj)
         file = relativeto(state, url)
-        data = stringmime("text/html", Base.Markdown.parse(readstring(file)))
-        HTML(data), state
+        data = StdLib.rendermd(readstring(file))
+        tohiccup(data, state)
     elseif kind == Keyword("remark")
         url = evaluate!(state, obj)
         file = relativeto(state, url)

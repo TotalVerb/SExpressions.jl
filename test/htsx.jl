@@ -102,9 +102,7 @@ end
 
 @test Htsx.tohtml("data/test-markdown.lsp") == """
 <!DOCTYPE html>
-<div class="markdown"><h1>Some Markdown</h1>
-<p><strong>Test</strong>.</p>
-</div>"""
+<div><h1>Some Markdown</h1><p><strong>Test</strong>.</p></div>"""
 
 @testset "Each" begin
 @test htsx"""
@@ -125,7 +123,7 @@ end
 @testset "Markdown Render" begin
 @test Htsx.tohtml("data/markdown-render.lsp") == """
 <!DOCTYPE html>
-<p>my <a href="http://example.com">link to</a></p>"""
+<div><p>my <a href="http://example.com">link to</a></p></div>"""
 end
 
 @testset "Object Include" begin
