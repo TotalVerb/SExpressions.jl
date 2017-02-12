@@ -5,7 +5,7 @@ import ..Lists.unparse
 
 export Keyword
 
-immutable Keyword
+struct Keyword
     sym::String
 end
 Base. ==(x::Keyword, y::Keyword) = x.sym == y.sym

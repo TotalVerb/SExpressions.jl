@@ -13,10 +13,10 @@ lispify(b::Bool) = b
 lispify(i::Integer) = BigInt(i)
 lispify(t::Tuple) = isempty(t) ? nil : Cons(lispify(t[1]), lispify(t[2:end]))
 
-immutable Nil end
+struct Nil end
 const nil = Nil.instance
 
-immutable Cons
+struct Cons
     car
     cdr
 end

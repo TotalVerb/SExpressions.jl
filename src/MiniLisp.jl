@@ -8,9 +8,7 @@ module MiniLisp
 
 using ..Lists
 
-abstract Continuation
-
-immutable
+abstract type Continuation; end
 
 const BUILTINS = List(
     List(:(+), +),

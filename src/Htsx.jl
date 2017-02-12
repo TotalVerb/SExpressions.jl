@@ -36,7 +36,7 @@ function makeenv(ass=Dict(), modules=[])
     Env
 end
 
-immutable HtsxState
+struct HtsxState
     env::Module
     file::String
 end
