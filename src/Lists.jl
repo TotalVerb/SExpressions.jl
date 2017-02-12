@@ -9,7 +9,6 @@ export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
        append, ++, ⊚, cons, list
 
 lispify(x) = x
-lispify(::Void) = nil
 lispify(b::Bool) = b
 lispify(i::Integer) = BigInt(i)
 lispify(t::Tuple) = isempty(t) ? nil : Cons(lispify(t[1]), lispify(t[2:end]))
@@ -60,6 +59,7 @@ Base.getindex(α::Nil, b) = throw(BoundsError(α, b))
 Base.getindex(α::Cons, b) = b == 1 ? car(α) : cdr(α)[b - 1]
 
 unparse(α::List) = "(" * join(unparse ⊚ α, " ") * ")"
+unparse(b::Bool) = b ? "#t" : "#f"
 unparse(s::Symbol) = string(s)
 unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
