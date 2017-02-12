@@ -6,7 +6,7 @@ using ..Keywords
 using ..SimpleJulia
 using Compat
 using Hiccup
-using FunctionalCollections
+using FunctionalCollections: PersistentHashMap
 
 include("Htsx/markdown-htsx.jl")
 include("Htsx/stdlib.jl")
@@ -146,9 +146,10 @@ function gethiccupnode(head::Symbol, ρ, state)
     end
 end
 
+quoted(x) = list(:quote, x)
 function gethiccupnode(head::Keyword, ρ, state)
     if head == Keyword("template")
-        tohiccup(evaluate!(state, :($(car(ρ))($(cdr(ρ)...)))), state)
+        tohiccup(evaluate!(state, cons(car(ρ), quoted ⊚ cdr(ρ))), state)
     elseif head == Keyword("var")
         Base.depwarn(string(
             "#:var is deprecated; use (remark $(repr(car(ρ)))) ",

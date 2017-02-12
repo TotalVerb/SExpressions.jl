@@ -10,10 +10,10 @@
         (:body, (:p, "This is my first HTSX page"))))
 
 @test htsx"""
-(#:define (foo x y) (string (+ x y)))
+(#:define (foo-bar x y) (string (+ x y)))
 (html ([lang "en"])
-  (head (title "Page " (#:template foo 1 1))
-  (body (p "This is page " (#:template foo 1 1) "."))))
+  (head (title "Page " (#:template foo-bar 1 1))
+  (body (p "This is page " (#:template foo-bar 1 1) "."))))
 """ == """
 <!DOCTYPE html>
 <html lang="en"><head><title>Page 2</title><body><p>This is page 2.</p></body></head></html>"""
