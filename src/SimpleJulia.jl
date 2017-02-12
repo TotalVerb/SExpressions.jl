@@ -13,7 +13,6 @@ function tojulia(x::Symbol)
 end
 
 const _IMPLICIT_KEYWORDS = Dict(
-    :(=) => :(=),
     :if => :if,
     :while => :while,
     :begin => :block,
@@ -66,6 +65,9 @@ function tojulia(α::List)
         Expr(_IMPLICIT_KEYWORDS[car(α)], (tojulia ⊚ cdr(α))...)
     elseif haskey(_IMPLICIT_MACROS, car(α))
         Expr(:macrocall, _IMPLICIT_MACROS[car(α)], (tojulia ⊚ cdr(α))...)
+    elseif car(α) == :(=)
+        Base.depwarn("= is deprecated; use `set!` or `define`", :tojulia)
+        tojulia(cons(:define, cdr(α)))
     else
         Expr(:call, (tojulia ⊚ α)...)
     end

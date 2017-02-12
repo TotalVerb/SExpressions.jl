@@ -41,7 +41,7 @@
 
 @test htsx"""
 (#:execute
-  (= x "Hello, World"))
+  (define x "Hello, World"))
 (p (#:var (string x "!")))
 """ == """
 <!DOCTYPE html>
@@ -49,8 +49,8 @@
 
 @test htsx"""
 (#:execute
-  (= x "Hello, ")
-  (= y "World"))
+  (define x "Hello, ")
+  (define y "World"))
 (p (#:var (string x y "!")))
 """ == """
 <!DOCTYPE html>

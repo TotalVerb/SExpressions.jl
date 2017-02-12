@@ -12,7 +12,7 @@ using Base.Iterators
         (:sqr, :x),
         (:(^), :x, 2)))
 
-@test isa(SExpressions.parsefile("data/scheme.jl"), List)
+@test isa(SExpressions.parsefile("data/scheme.scm"), List)
 
 end
 
