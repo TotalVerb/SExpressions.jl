@@ -157,6 +157,11 @@ function gethiccupnode(head::Keyword, ρ, state)
             :var)
         evaluate!(state, car(ρ)), state
     elseif head == Keyword("execute")
+        Base.depwarn(string(
+            "#:execute is deprecated; use ",
+            repr(append(list(:remark), ρ, list(list(:void)))),
+            " instead"),
+            :execute)
         for ς in ρ
             evaluate!(state, ς)
         end
@@ -200,6 +205,11 @@ function gethiccupnode(head::Keyword, ρ, state)
             :markdown)
         handleinclude(car(ρ), Keyword("markdown"), state)
     elseif head == Keyword("define")
+        Base.depwarn(string(
+            "#:define is deprecated; use ",
+            repr(list(:remark, cons(:define, ρ))),
+            " instead"),
+            :define)
         fn = tojulia(car(ρ))
         if !Meta.isexpr(fn, :call)
             error("wrong define syntax")

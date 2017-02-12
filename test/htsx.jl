@@ -10,7 +10,8 @@
         (:body, (:p, "This is my first HTSX page"))))
 
 @test htsx"""
-(#:define (foo-bar x y) (string (+ x y)))
+(remark
+  (define (foo-bar x y) (string (+ x y))))
 (html ([lang "en"])
   (head (title "Page " (#:template foo-bar 1 1))
   (body (p "This is page " (#:template foo-bar 1 1) "."))))
@@ -19,9 +20,10 @@
 <html lang="en"><head><title>Page 2</title><body><p>This is page 2.</p></body></head></html>"""
 
 @test htsx"""
-(#:define (sqr x) (* x x))
-(#:define (n^4 x) (* (sqr x) (sqr x)))
-(#:define (test x) (string (n^4 x)))
+(remark
+  (define (sqr x) (* x x))
+  (define (n^4 x) (* (sqr x) (sqr x)))
+  (define (test x) (string (n^4 x))))
 (html ([lang "en"])
   (title (#:template test 10))
   (p "test"))
@@ -33,7 +35,7 @@
 @test htsx"""
 (#:when (defined? 'x)
   (p "yes 1"))
-(#:define (x y) y)
+(remark (define (x y) y))
 (#:when (defined? 'x)
   (p "yes 2"))
 """ == """
@@ -55,7 +57,7 @@ end
 
 @testset "Remark" begin
 @test htsx"""
-(#:execute
+(remark
   (define x "Hello, World"))
 (p (remark (string x "!")))
 """ == """
@@ -63,7 +65,7 @@ end
 <p>Hello, World!</p>"""
 
 @test htsx"""
-(#:execute
+(remark
   (define x "Hello, ")
   (define y "World"))
 (p (remark (string x y "!")))
@@ -72,7 +74,7 @@ end
 <p>Hello, World!</p>"""
 
 @test htsx"""
-(#:define (foo x) 0)
+(remark (define (foo x) 0))
 (p (remark (foo 1)))
 """ == """
 <!DOCTYPE html>
