@@ -4,15 +4,26 @@ using SExpressions.R5RS
 
 @testset "Scheme Syntax" begin
 
-@test SExpressions.SimpleJulia.tojulia(sx"(+ 1 1)") == :(1 + 1)
-@test SExpressions.SimpleJulia.tojulia(sx"""
-  (if x y z)
-""") == :(x ? y : z)
-
 evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
 
-@test evaluate(sx"'x") == :x
-@test evaluate(sx"`(+ 1 1)") == List(:+, 1, 1)
+@testset "Calls" begin
+    @test SExpressions.SimpleJulia.tojulia(sx"(+ 1 1)") == :(1 + 1)
+    @test evaluate(sx"(+ 1 1)") == 2
+    @test evaluate(sx"(void)") === nothing
+    @test evaluate(sx"(void 1 2)") === nothing
+    @test evaluate(sx"(void (* 1 3))") === nothing
+end
+
+@testset "if" begin
+    @test SExpressions.SimpleJulia.tojulia(sx"""
+      (if x y z)
+    """) == :(x ? y : z)
+end
+
+@testset "quote" begin
+    @test evaluate(sx"'x") == :x
+    @test evaluate(sx"`(+ 1 1)") == List(:+, 1, 1)
+end
 
 @testset "set!" begin
     @test evaluate(sx"""
@@ -23,14 +34,16 @@ evaluate(α) = eval(SExpressions.SimpleJulia.tojulia(α))
     """) == List(:+, 2, :x)
 end
 
-@test evaluate(sx"""
-(begin
-  (define (foo (:: x Integer)) 1)
-  (define (foo (:: x String)) 2)
-  (string (foo 1) (foo "x")))
-""") == "12"
+@testset "Julia" begin
+    @test evaluate(sx"""
+    (begin
+      (define (foo (:: x Integer)) 1)
+      (define (foo (:: x String)) 2)
+      (string (foo 1) (foo "x")))
+    """) == "12"
 
-@test evaluate(sx"((. Base +) 1 2)") == 3
+    @test evaluate(sx"((. Base +) 1 2)") == 3
+end
 
 for (sym, fn) in [[:and, &], [:or, |]]
     @testset "$sym" begin
