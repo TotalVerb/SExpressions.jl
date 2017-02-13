@@ -56,12 +56,16 @@ function parse(::Type{Symbol}, s::AbstractString, i)
     end
     str = join(buf, "")
 
-    rationalmatch = match(r"^([0-9]+)/([0-9]+)", str)
-    i, if all(isdigit, str)
-        Base.parse(BigInt, str)  # FIXME: floats?
+    integermatch = match(r"^([+-]?)([0-9]+)$", str)
+    rationalmatch = match(r"^([+-]?)([0-9]+)/([0-9]+)", str)
+    # FIXME: floats?
+    i, if integermatch !== nothing
+        sign = integermatch[1] == "-" ? -1 : 1
+        sign * Base.parse(BigInt, integermatch[2])
     elseif rationalmatch !== nothing
-        Base.parse(BigInt, rationalmatch[1]) //
-            Base.parse(BigInt, rationalmatch[2])
+        sign = rationalmatch[1] == "-" ? -1 : 1
+        sign * Base.parse(BigInt, rationalmatch[2]) //
+            Base.parse(BigInt, rationalmatch[3])
     elseif str == "#t"
         true
     elseif str == "#f"
