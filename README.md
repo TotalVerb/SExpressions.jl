@@ -75,11 +75,6 @@ htsx"""
 """
 ```
 
-## Julia
-
-The package provides a simple (undocumented) Julia syntax based off
-s-expressions.
-
 ## Internals
 
 In lisp tradition, this package heavily relies on recursion. Of course, this
