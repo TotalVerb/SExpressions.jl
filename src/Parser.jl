@@ -55,8 +55,13 @@ function parse(::Type{Symbol}, s::AbstractString, i)
         i = nextind(s, i)
     end
     str = join(buf, "")
+
+    rationalmatch = match(r"^([0-9]+)/([0-9]+)", str)
     i, if all(isdigit, str)
         Base.parse(BigInt, str)  # FIXME: floats?
+    elseif rationalmatch !== nothing
+        Base.parse(BigInt, rationalmatch[1]) //
+            Base.parse(BigInt, rationalmatch[2])
     elseif str == "#t"
         true
     elseif str == "#f"
