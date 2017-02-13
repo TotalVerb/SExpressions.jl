@@ -34,12 +34,12 @@ function makeenv(ass=Dict(), modules=[])
     Env
 end
 
-struct HtsxState
+struct RemarkState
     env::Module
     file::String
 end
-getvar(s::HtsxState, v::Symbol) = getfield(s.env, v)
-evaluate!(s::HtsxState, ex) = eval(s.env, tojulia(ex))
+getvar(s::RemarkState, v::Symbol) = getfield(s.env, v)
+evaluate!(s::RemarkState, ex) = eval(s.env, tojulia(ex))
 function evaluateall!(state, ρ)
     local data
     for α in ρ
@@ -47,7 +47,7 @@ function evaluateall!(state, ρ)
     end
     data
 end
-relativeto(s::HtsxState, f) = joinpath(dirname(s.file), f)
+relativeto(s::RemarkState, f) = joinpath(dirname(s.file), f)
 
 setindex(x, y, z) = assoc(x, z, y)
 
@@ -198,7 +198,7 @@ function tohtml(io::IO, α::List, tmpls=PersistentHashMap{Symbol,Any}();
                 file=joinpath(pwd(), "_implicit.htsx"),
                 modules=[])
     println(io, "<!DOCTYPE html>")
-    state = HtsxState(makeenv(tmpls, modules), file)
+    state = RemarkState(makeenv(tmpls, modules), file)
     ashiccup, _ = acc2(tohiccup, α, state)
     show_html(io, flattentree(ashiccup))
 end
