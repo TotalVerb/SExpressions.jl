@@ -1,3 +1,3 @@
 (include
-  ((. StdLib rendermd) "my [link to](http://example.com)")
+  ((.rendermd StdLib) "my [link to](http://example.com)")
   #:object)

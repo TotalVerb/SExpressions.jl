@@ -19,7 +19,5 @@ macro htsx_str(x::String)
 end
 
 export @sx_str, @htsx_str, Htsx
-using SchemeSyntax
-Base.@deprecate_binding SimpleJulia SchemeSyntax
 
 end  # module SExpressions

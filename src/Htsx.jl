@@ -10,7 +10,7 @@ using FunctionalCollections: PersistentHashMap
 
 include("Htsx/stdlib.jl")
 
-typealias ListOrArray Union{List, Array}
+const ListOrArray = Union{List, Array}
 
 function makeenv(ass=Dict(), modules=[])
     Env = Module(gensym(:Env))
@@ -148,22 +148,6 @@ quoted(x) = list(:quote, x)
 function gethiccupnode(head::Keyword, ρ, state)
     if head == Keyword("template")
         tohiccup(evaluate!(state, cons(car(ρ), quoted ⊚ cdr(ρ))), state)
-    elseif head == Keyword("var")
-        Base.depwarn(string(
-            "#:var is deprecated; use (remark $(repr(car(ρ)))) ",
-            "instead"),
-            :var)
-        evaluate!(state, car(ρ)), state
-    elseif head == Keyword("execute")
-        Base.depwarn(string(
-            "#:execute is deprecated; use ",
-            repr(append(list(:remark), ρ, list(list(:void)))),
-            " instead"),
-            :execute)
-        for ς in ρ
-            evaluate!(state, ς)
-        end
-        nothing, state
     elseif head == Keyword("when")
         cond = car(ρ)
         if evaluate!(state, cond)
@@ -171,18 +155,6 @@ function gethiccupnode(head::Keyword, ρ, state)
         else
             nothing, state
         end
-    elseif head == Keyword("include")
-        Base.depwarn(string(
-            "#:include is deprecated; use (include $(repr(car(ρ))) ",
-            "#:remark) instead"),
-            :include)
-        handleinclude(car(ρ), Keyword("remark"), state)
-    elseif head == Keyword("file")
-        Base.depwarn(string(
-            "#:file is deprecated; use (include $(repr(car(ρ))) ",
-            "#:text) instead"),
-            :file)
-        handleinclude(car(ρ), Keyword("text"), state)
     elseif head == Keyword("each")
         var, array, code = ρ
         doms = eval(state.env, quote
@@ -196,26 +168,6 @@ function gethiccupnode(head::Keyword, ρ, state)
             push!(objects, res)
         end
         objects, state
-    elseif head == Keyword("markdown")
-        Base.depwarn(string(
-            "#:markdown is deprecated; use (include $(repr(car(ρ))) ",
-            "#:markdown) instead"),
-            :markdown)
-        handleinclude(car(ρ), Keyword("markdown"), state)
-    elseif head == Keyword("define")
-        Base.depwarn(string(
-            "#:define is deprecated; use ",
-            repr(list(:remark, cons(:define, ρ))),
-            " instead"),
-            :define)
-        fn = tojulia(car(ρ))
-        if !Meta.isexpr(fn, :call)
-            error("wrong define syntax")
-        end
-        newfn = eval(state.env,
-            Expr(:function, Expr(:call, fn.args...),
-            tojulia(cadr(ρ))))
-        nothing, state  # nothing value
     else
         error("Unsupported HTSX keyword $head")
     end

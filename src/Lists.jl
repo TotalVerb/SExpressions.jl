@@ -37,7 +37,7 @@ end
 
 Base.:(==)(α::Cons, β::Cons) = car(α) == car(β) && cdr(α) == cdr(β)
 
-typealias List Union{Cons, Nil}
+const List = Union{Cons, Nil}
 
 List() = nil
 List(xs...) = Cons(lispify(xs[1]), List(xs[2:end]...))
