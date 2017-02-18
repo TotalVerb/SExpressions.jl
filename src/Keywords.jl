@@ -6,7 +6,7 @@ import Base: ==, hash
 using ..Lists
 import ..Lists.unparse
 
-struct Keyword
+immutable Keyword
     sym::String
 end
 x::Keyword == y::Keyword = x.sym == y.sym

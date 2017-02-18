@@ -9,7 +9,7 @@
  performance isn’t a concern but if it’s too shitty we can consider ropes
 =#
 
-struct ShowListContext
+immutable ShowListContext
     indent::Int
     limit::Int
 end
