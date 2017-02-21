@@ -34,7 +34,7 @@ function makeenv(ass=Dict(), modules=[])
     Env
 end
 
-immutable RemarkState
+struct RemarkState
     env::Module
     file::String
 end
