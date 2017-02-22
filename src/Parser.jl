@@ -6,6 +6,8 @@ using Base.Iterators
 using ..Lists
 using ..Keywords
 
+include("Parser/numeric.jl")
+
 export parse
 
 const _PUNCT = ('(', ')', '[', ']', '{', '}', '"', ';')
@@ -56,16 +58,9 @@ function parse(::Type{Symbol}, s::AbstractString, i)
     end
     str = join(buf, "")
 
-    integermatch = match(r"^([+-]?)([0-9]+)$", str)
-    rationalmatch = match(r"^([+-]?)([0-9]+)/([0-9]+)", str)
-    # FIXME: floats?
-    i, if integermatch !== nothing
-        sign = integermatch[1] == "-" ? -1 : 1
-        sign * Base.parse(BigInt, integermatch[2])
-    elseif rationalmatch !== nothing
-        sign = rationalmatch[1] == "-" ? -1 : 1
-        sign * Base.parse(BigInt, rationalmatch[2]) //
-            Base.parse(BigInt, rationalmatch[3])
+    asnumber = tryparse(Number, str)
+    i, if !isnull(asnumber)
+        get(asnumber)
     elseif str == "#t"
         true
     elseif str == "#f"
