@@ -6,7 +6,7 @@ using Base.Iterators
 using ..Lists
 using ..Keywords
 
-include("Parser/numeric.jl")
+include("numeric.jl")
 
 export parse
 

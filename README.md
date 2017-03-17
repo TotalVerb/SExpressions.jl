@@ -4,8 +4,8 @@
 
 ## Philosophy
 
-The world would be a simpler and easier place if everyone just used
-s-expressions.
+S-expressions simplify many things. Therefore, easy handling of s-expressions
+is useful.
 
 ## Requirements
 

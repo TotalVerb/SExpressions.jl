@@ -55,10 +55,10 @@ actions = Dict(
 
 # Generate a tokenizing function from the machine.
 @eval function tryparse(::Type{Number}, data::String)
-    curcomplex = big"0"
-    curnat = big"0"
-    curreal = big"1"
-    cursign = 1
+    curcomplex = big(0)
+    curnat = big(0)
+    curreal = big(1)
+    cursign = big(1)
     curnumerator = true
     mark = 0
     $(Automa.generate_init_code(machine))
@@ -67,13 +67,13 @@ actions = Dict(
 
     nextator!() = begin
         curreal *= curnumerator ? curnat : (1//curnat)
-        curnat = big"0"
+        curnat = big(0)
         curnumerator = false
     end
     nextterm!() = if !iszero(curreal)
         nextator!()
         curcomplex += curreal * cursign
-        curreal = big"1"
+        curreal = big(1)
         cursign = 1
         curnumerator = true
     end
