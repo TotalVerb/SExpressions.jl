@@ -5,15 +5,15 @@ using Reexport
 include("Lists.jl")
 include("Keywords.jl")
 include("Parser.jl")
-include("Htsx.jl")
 
 import .Parser: parse, parses, parsefile
-import .Htsx
 
 macro sx_str(x::String)
     parse(x)
 end
 
+using Remarkable
+const Htsx = Remarkable.Remark
 macro htsx_str(x::String)
     Htsx.tohtml(parses(x))
 end
