@@ -47,36 +47,6 @@ julia> sx"""
 This is not fast either. This package is not intended for huge files containing
 s-expressions.
 
-## HTML
-
-This package provides a way to write HTML pages using terse s-expression syntax.
-This functionality is named HTSX, for Hypertext S-Expressions. The code:
-
-```racket
-(html ([lang "en"])
-    (head (title "Hello World!"))
-    (body (p "This is my first HTSX page.")))
-```
-
-turns into
-
-```html
-<!DOCTYPE html>
-<html lang="en"><head><title>Hello World!</title></head><body><p>This is my first HTSX page.</p></body></html>
-```
-
-To use HTSX, use the `@htsx_str` string macro:
-
-```julia
-htsx"""
-(html ([lang "en"])
-    (title "Hello World!")
-    (p "This is an example of the " (code "@htsx_str") " string macro."))
-"""
-```
-
-## Internals
-
 In lisp tradition, this package heavily relies on recursion. Of course, this
 means that you can probably break it with a stack overflow if you use it on very
 large data. It's also not super fast.

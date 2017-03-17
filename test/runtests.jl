@@ -5,4 +5,3 @@ using Base.Iterators
 include("parser.jl")
 include("lists.jl")
 include("keywords.jl")
-include("htsx.jl")

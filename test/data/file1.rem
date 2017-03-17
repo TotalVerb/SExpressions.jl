@@ -1,3 +1,0 @@
-(remark (define (foo x) (* x x)))
-(include "file2.rem" #:remark)
-(p "File 1: " (#:template bar 10))

@@ -13,11 +13,7 @@ macro sx_str(x::String)
 end
 
 using Remarkable
-const Htsx = Remarkable.Remark
-macro htsx_str(x::String)
-    Htsx.tohtml(parses(x))
-end
 
-export @sx_str, @htsx_str, Htsx
+export @sx_str
 
 end  # module SExpressions
