@@ -6,7 +6,7 @@ using Base.Iterators
 const ⊚ = Base.map
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
-       append, ++, ⊚, cons, list, islist
+       append, ++, ⊚, cons, list, islist, Nil
 
 lispify(x) = x
 lispify(b::Bool) = b

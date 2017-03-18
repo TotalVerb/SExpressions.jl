@@ -58,7 +58,7 @@ actions = Dict(
     curcomplex = big(0)
     curnat = big(0)
     curreal = big(1)
-    cursign = big(1)
+    cursign = 1
     curnumerator = true
     mark = 0
     $(Automa.generate_init_code(machine))
