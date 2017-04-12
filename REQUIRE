@@ -1,8 +1,7 @@
-Hiccup
-Reexport
-FunctionalCollections
-DataStructures 0.5.1
-Compat 0.9.5
 julia 0.6-
-Documenter
 Automa 0.1.2
+Compat 0.9.5
+DataStructures 0.5.1
+Documenter
+FunctionalCollections
+Reexport
