@@ -11,3 +11,5 @@ script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone("https://github.com/TotalVerb/SchemeSyntax.jl.git")'
   - julia -e 'Pkg.clone(pwd()); Pkg.build("SExpressions"); Pkg.test("SExpressions"; coverage=true)'
+  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'cd(Pkg.dir("SExpressions")); include(joinpath("docs", "make.jl"))'
