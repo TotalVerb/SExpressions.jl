@@ -7,6 +7,7 @@ using ..Lists
 using ..Keywords
 
 include("numeric.jl")
+include("util.jl")
 
 export parse
 
