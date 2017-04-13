@@ -13,6 +13,15 @@ const sx = SExpressions.parse
     @test sx("3-2i") == 3-2im
 end
 
+@testset "booleans" begin
+    @test sx("#t")
+    @test sx("#true")
+    @test sx("#T")
+    @test !sx("#f")
+    @test !sx("#false")
+    @test !sx("#F")
+end
+
 @testset "arithmetic" begin
     @test sx("(+ 1 1)") == List(:(+), 1, 1)
     @test sx("(+ 1/2 1/3)") == List(:(+), 1//2, 1//3)
