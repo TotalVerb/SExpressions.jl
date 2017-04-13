@@ -98,6 +98,7 @@ function nextobject(io::IO)
     elseif c in ")]}"
         error("mismatched superfluous $c")
     elseif c in keys(_READER_MACROS)
+        read(io, Char)
         Nullable(List(_READER_MACROS[c], get(nextobject(io))))
     elseif c == '"'
         read(io, Char)

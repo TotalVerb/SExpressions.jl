@@ -62,6 +62,18 @@ end
     @test_broken sx("(1 . 2)") == Cons(1, 2)
 end
 
+@testset "reader macros" begin
+    @test sx("'x") == List(:quote, :x)
+    @test sx("`(+ 1 2)") == List(:quasiquote, List(:(+), 1, 2))
+    @test sx("`(+ ,x 2)") == List(:quasiquote,
+                                  List(:(+), List(:unquote, :x), 2))
+    @test_broken sx("`(+ ,@xs 2)") ==
+        lispify((:quasiquote,
+                 (:(+),
+                  (Symbol("unquote-splicing"), :x),
+                  2)))
+end
+
 @testset "file" begin
     @test SExpressions.parsefile("data/scheme.scm") isa List
 end
