@@ -21,15 +21,15 @@ var documenterSearchIndex = {"docs": [
     "page": "SExpressions.jl",
     "title": "SExpressions.Parser.parse",
     "category": "Function",
-    "text": "Parse a Symbol or number or Keyword or Bool at the given index.\n\n\n\nParse a String at the given index.\n\n\n\nParse a list at the given index.\n\n\n\nParse an s-expression at the given index of the given AbstractString.\n\n\n\n"
+    "text": "parse(s::AbstractString)\n\nRead the given string s as a single s-expression.\n\n\n\nparse(io::IO)\n\nRead a single object from the given io stream.\n\n\n\n"
 },
 
 {
-    "location": "index.html#SExpressions.Parser.parses",
+    "location": "index.html#SExpressions.Parser.parseall",
     "page": "SExpressions.jl",
-    "title": "SExpressions.Parser.parses",
+    "title": "SExpressions.Parser.parseall",
     "category": "Function",
-    "text": "Parse an entire string into a single list.\n\n\n\n"
+    "text": "parseall(io::IO)\nparseall(s::AbstractString)\n\nParse all objects from the given stream or string into a single list.\n\n\n\n"
 },
 
 {
@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "SExpressions.jl",
     "title": "SExpressions.Parser.parsefile",
     "category": "Function",
-    "text": "Parse a file into a single list.\n\n\n\n"
+    "text": "parsefile(filename::AbstractString)\n\nParse a file into a single list.\n\n\n\n"
 },
 
 {
@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "SExpressions.jl",
     "title": "Core Parser Interface",
     "category": "section",
-    "text": "SExpressions.parse\nSExpressions.parses\nSExpressions.parsefile"
+    "text": "SExpressions.parse\nSExpressions.parseall\nSExpressions.parsefile"
 },
 
 ]}
