@@ -1,30 +1,76 @@
 @testset "Parser" begin
 
-@test sx"(+ 1 1)" == List(:(+), 1, 1)
-@test sx"""
-(define (sqr x) (^ x 2))
-""" == lispify((
-        :define,
-        (:sqr, :x),
-        (:(^), :x, 2)))
+const sx = SExpressions.parse
 
-@test SExpressions.parsefile("data/scheme.scm") isa List
+@testset "numbers" begin
+    @test sx("-1") == -1
+    @test sx("+1000") == 1000
+    @test sx("-15/5") == -3
+    @test sx("+13/17") == 13//17
+    @test sx("-1/2") == -1//2
+    @test sx("-1/2+3i") == -1//2+3im
+    @test sx("3+4/3i") == 3+4im//3
+    @test sx("3-2i") == 3-2im
+end
 
-@test sx"-1" == -1
-@test sx"+1000" == 1000
-@test sx"-15/5" == -3
-@test sx"+13/17" == 13//17
-@test sx"-1/2" == -1//2
-@test sx"-1/2+3i" == -1//2+3im
-@test sx"3+4/3i" == 3+4im//3
-@test sx"3-2i" == 3-2im
+@testset "arithmetic" begin
+    @test sx("(+ 1 1)") == List(:(+), 1, 1)
+    @test sx("(+ 1/2 1/3)") == List(:(+), 1//2, 1//3)
+    @test sx("""
+    (define (sqr x) (^ x 2))
+    """) == lispify((
+            :define,
+            (:sqr, :x),
+            (:(^), :x, 2)))
+end
 
-@test sx"(+ 1/2 1/3)" == List(:(+), 1//2, 1//3)
+@testset "invalid syntax" begin
+    @test_throws ErrorException SExpressions.parseall("(+ 1 1")
+    @test_throws ErrorException SExpressions.parseall("(+ 1 1]")
+    @test_throws ErrorException SExpressions.parseall("(+ 1 1))")
+    @test_throws ErrorException SExpressions.parseall("(+ 1 1;)")
+end
 
-@test_throws ErrorException SExpressions.parses("(+ 1 1")
-@test_throws ErrorException SExpressions.parses("(+ 1 1]")
-@test_throws ErrorException SExpressions.parses("(+ 1 1))")
-@test_throws ErrorException SExpressions.parses("(+ 1 1;)")
-@test sx"1;" == 1
+@testset "comment" begin
+    @test sx("1;") == 1
+    @test sx(";
+             x") == :x
+    @test sx(";
+    ;
+    ;
+    4;2
+    ") == 4
+end
+
+@testset "strings" begin
+    @test sx("\"x\"") == "x"
+    @test sx("\"x\\n\"") == "x\n"
+    @test sx("""\"
+    x\\
+    y\\\\
+    z\"""") == "\nxy\\\nz"
+end
+
+@testset "symbols" begin
+    @test sx("foo") == :foo
+    @test_broken sx("|x|") == :x
+    @test_broken sx("| |") == Symbol(" ")
+end
+
+@testset "lists" begin
+    @test sx("(1 2 3)") == List(1, 2, 3)
+    @test_broken sx("(1 . 2)") == Cons(1, 2)
+end
+
+@testset "file" begin
+    @test SExpressions.parsefile("data/scheme.scm") isa List
+end
+
+@testset "macro" begin
+    # we try to limit these in number, because if they fail then a LoadError
+    # occurs, and that is bad for debugging
+    @test sx"1" == 1
+    @test sx"foo" == :foo
+end
 
 end

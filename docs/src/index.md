@@ -10,6 +10,6 @@ parser for s-expressions.
 
 ```@docs
 SExpressions.parse
-SExpressions.parses
+SExpressions.parseall
 SExpressions.parsefile
 ```

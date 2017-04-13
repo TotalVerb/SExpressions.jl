@@ -11,159 +11,270 @@ include("util.jl")
 
 export parse
 
-const _PUNCT = ('(', ')', '[', ']', '{', '}', '"', ';')
-ispunct(c) = c ∈ _PUNCT
+const _DELIMITERS = collect("()[]{}\",'`;")
 
 const _NEWLINE = (
         '\u000D', '\u000A', '\u0085', '\u000B', '\u000C', '\u2028', '\u2029')
 isnewline(c) = c ∈ _NEWLINE
 
 const _CLOSE = Dict('(' => ')', '[' => ']', '{' => '}', '"' => '"')
-close(c) = _CLOSE[c]
+closer(c) = _CLOSE[c]
 
 const _READER_MACROS = Dict(
     '\'' => :quote,
     '`' => :quasiquote,
     ',' => :unquote)
 
-"""
-Skip all whitespace characters starting at the given index of the given
-`AbstractString`.
-"""
-function skipws(s::AbstractString, i)
-    while i ≤ endof(s) && isspace(s[i])
-        i = nextind(s, i)
-    end
-    i
-end
+const _ESCAPED = Dict('a' => '\x07', 'b' => '\x08', 't' => '\x09',
+                      'n' => '\x0a', 'v' => '\x0b', 'f' => '\x0c',
+                      'r' => '\x0d', 'e' => '\x1b', '"' => '"',
+                      '\'' => '\'', '\\' => '\\')
 
-"""
-Skip all characters until the next newline character.
-"""
-function skipline(s::AbstractString, i)
-    while i ≤ endof(s) && !isnewline(s[i])
-        i = nextind(s, i)
-    end
-    i
-end
+isdelimiter(c) = isspace(c) || c in _DELIMITERS
 
-"""
-Parse a `Symbol` or number or `Keyword` or `Bool` at the given index.
-"""
-function parse(::Type{Symbol}, s::AbstractString, i)
-    i = skipws(s, i)
-    buf = Char[]
-    while i ≤ endof(s) && !isspace(s[i]) && !ispunct(s[i])
-        push!(buf, s[i])
-        i = nextind(s, i)
-    end
-    str = join(buf, "")
-
-    asnumber = tryparse(Number, str)
-    i, if !isnull(asnumber)
-        get(asnumber)
-    elseif str == "#t"
-        true
-    elseif str == "#f"
-        false
-    elseif length(str) ≥ 2 && startswith(str, "#:")
-        Keyword(String(collect(drop(str, 2))))
-    else
-        Symbol(str)
-    end
-end
-
-"""
-Parse a `String` at the given index.
-"""
-function parse(::Type{String}, s::AbstractString, i, c)
-    buf = Char[]
-    while i ≤ endof(s) && s[i] ≠ c
-        if s[i] == '\\'  # at least one extra character to parse
-            push!(buf, s[i])
-            i = nextind(s, i)
-            push!(buf, s[i])
-        else
-            push!(buf, s[i])
+macro syntaxcheck(ex)
+    quote
+        if !$(esc(ex))
+            # TODO improve the error messages
+            error("invalid syntax")
         end
-        i = nextind(s, i)
     end
-    nextind(s, i), unescape_string(join(buf, ""))
 end
 
 """
-Parse a list at the given index.
+    skipws(io::IO)
+
+Skip all whitespace characters at beginning of the given `io` object.
 """
-function parse(::Type{List}, s::AbstractString, i, c)
-    i = skipws(s, i)
-    if i > endof(s)
-        error("Missing $c at end of file.")
-    elseif s[i] == c
-        nextind(s, i), nil
-    elseif s[i] in (')', ']', '}')
-        error("Mismatched parentheses; expected $c found $(s[i]).")
+function skipws(io::IO)
+    while !eof(io)
+        c = read(io, Char)
+        if !isspace(c)
+            skip(io, -readsize(io, c))
+            return
+        end
+    end
+end
+
+"""
+    readsymbol(io::IO)
+
+Read up until the next delimiter.
+"""
+function readsymbol(io::IO)
+    buf = IOBuffer()
+    while !eof(io)
+        c = read(io, Char)
+        if isdelimiter(c)
+            skip(io, -readsize(io, c))
+            return String(take!(buf))
+        end
+        write(buf, c)
+    end
+    String(take!(buf))
+end
+
+"""
+    nextobject(io::IO)
+
+Obtain the next Racket object from the given `io` object, or `Nullable()` if
+there is no more input left.
+"""
+function nextobject(io::IO)
+    skipws(io)
+    if eof(io)
+        return Nullable()
+    end
+
+    c = peek(io, Char)
+    if c == ';'
+        skipcomment(io)
+        nextobject(io)
+    elseif c in "([{"
+        read(io, Char)
+        cl = closer(c)
+        objects = readobjectsuntil(io, cl)
+        Nullable(convert(List, objects))
+    elseif c in ")]}"
+        error("mismatched superfluous $c")
+    elseif c in keys(_READER_MACROS)
+        Nullable(List(_READER_MACROS[c], get(nextobject(io))))
+    elseif c == '"'
+        read(io, Char)
+        Nullable(parsestring(io))
+    elseif c == '#'
+        read(io, Char)
+        Nullable(readhash(io))
     else
-        i, ele = parse(s, i)
-        i = skipws(s, i)
-        i, rst = parse(List, s, i, c)
-        i = skipws(s, i)
-        i, Cons(ele, rst)
+        str = readsymbol(io)
+        if str == "."
+            error(". currently unsupported")
+        else
+            asnumber = tryparse(Number, str)
+            Nullable(get(asnumber, Symbol(str)))
+        end
     end
 end
 
-function tryparse(s::AbstractString, i)
-    i = skipws(s, i)
-    if i > endof(s)
-        i, Nullable{Any}()
-    elseif s[i] in ('(', '[', '{')
-        i, res = parse(List, s, nextind(s, i), close(s[i]))
-        i, Nullable{Any}(res)
-    elseif s[i] in (')', ']', '}')
-        error("Unexpected extraneous $(s[i]).")
-    elseif s[i] == '"'
-        i, res = parse(String, s, nextind(s, i), close(s[i]))
-        i, Nullable{Any}(res)
-    elseif s[i] == ';'
-        i = skipline(s, i)
-        tryparse(s, i)
-    elseif haskey(_READER_MACROS, s[i])
-        c = s[i]
-        i, ele = parse(s, nextind(s, i))
-        i, Nullable{Any}(List(_READER_MACROS[c], ele))
+"""
+    readobjectsuntil(io::IO, cl::Char)
+
+Read as many Racket objects are are available, then read the closer character.
+Return a vector of the read objects.
+"""
+function readobjectsuntil(io::IO, cl::Char)
+    objects = []
+    while !eof(io)
+        skipws(io)
+        c = peek(io, Char)
+        if c == cl
+            read(io, Char)
+            return objects
+        else
+            obj = nextobject(io)
+            if isnull(obj)
+                break
+            else
+                push!(objects, get(obj))
+            end
+        end
+    end
+    error("unexpected end of file before expected closing $cl character")
+end
+
+"""
+    readhash(io::IO)
+
+Read the `io` as if a `#` symbol was just seen, and return the read object.
+"""
+function readhash(io::IO)
+    x = read(io, Char)
+    if x == 't'
+        @syntaxcheck eof(io) || isdelimiter(peek(io, Char)) || begin
+            read(io, Char) == 'r'
+            read(io, Char) == 'u'
+            read(io, Char) == 'e'
+        end
+        true
+    elseif x == 'T'
+        @syntaxcheck eof(io) || isdelimiter(peek(io, Char))
+        true
+    elseif x == 'f'
+        @syntaxcheck eof(io) || isdelimiter(peek(io, Char)) || begin
+            read(io, Char) == 'a'
+            read(io, Char) == 'l'
+            read(io, Char) == 's'
+            read(io, Char) == 'e'
+        end
+        false
+    elseif x == 'F'
+        @syntaxcheck eof(io) || isdelimiter(peek(io, Char))
+        false
+    elseif x == ':'
+        @syntaxcheck !eof(io)
+        Keyword(readsymbol(io))
     else
-        i, res = parse(Symbol, s, i)
-        i, Nullable{Any}(res)
+        error("Unsupported syntax: #$x")
     end
 end
 
 """
-Parse an s-expression at the given index of the given AbstractString.
+    skipcomment(io::IO)
+
+Skip all characters until the end of line or end of file.
 """
-function parse(s::AbstractString, i)
-    i, res = tryparse(s, i)
-    if isnull(res)
-        error("Unexpected end of file.")
+function skipcomment(io::IO)
+    while !eof(io) && !isnewline(read(io, Char)) end
+end
+
+"""
+    parsestring(io::IO)
+
+Read a string from the given `io` stream, using Racket parsing rules.
+"""
+function parsestring(io::IO)
+    buf = IOBuffer()
+    while !eof(io)
+        c = read(io, Char)
+        if c == '\\'
+            x = read(io, Char)
+            if x in '0':'7'
+                val = x - '0'
+                for _ in 1:2
+                    if peek(io, Char) in '0':'7'
+                        val *= 8
+                        val += read(io, Char) - '0'
+                    end
+                end
+                Char(val)
+            elseif x in "xuU"
+                # TODO
+                error("escape sequence \\$x not yet supported")
+            elseif x == '\r'
+                if !eof(io) && peek(io, Char) == '\n'
+                    read(io, Char)
+                end
+            elseif x == '\n'  # no-op
+            elseif x in keys(_ESCAPED)
+                write(buf, _ESCAPED[x])
+            else
+                error("invalid escape sequence \\$x")
+            end
+        elseif c == '"'
+            return String(take!(buf))
+        else
+            write(buf, c)
+        end
+    end
+    error("unexpected EOF while waiting for terminating \"")
+end
+
+"""
+    parse(s::AbstractString)
+
+Read the given string `s` as a single s-expression.
+"""
+function parse(s::AbstractString)
+    buf = IOBuffer(s)
+    obj = nextobject(buf)
+    obj2 = nextobject(buf)
+    if isnull(obj)
+        error("no object to read")
+    elseif isnull(obj2)
+        get(obj)
     else
-        i, get(res)
-    end
-end
-parse(s::AbstractString) = parse(s, 1)[2]
-
-"""
-Parse an entire string into a single list.
-"""
-function parses(s::AbstractString, i=1)
-    i, res = tryparse(s, i)
-    if isnull(res)
-        nil
-    else
-        Cons(get(res), parses(s, i))
+        error("extra content after end of expression")
     end
 end
 
 """
+    parse(io::IO)
+
+Read a single object from the given `io` stream.
+"""
+parse(io::IO) = get(nextobject(io))
+
+"""
+    parsefile(filename::AbstractString)
+
 Parse a file into a single list.
 """
-parsefile(filename::AbstractString) = parses(readstring(filename))
+parsefile(filename::AbstractString) = open(parseall, filename)
+
+
+"""
+    parseall(io::IO)
+    parseall(s::AbstractString)
+
+Parse all objects from the given stream or string into a single list.
+"""
+function parseall(io::IO)
+    result = []
+    while (obj = nextobject(io); !isnull(obj))
+        push!(result, get(obj))
+    end
+    convert(List, result)
+end
+parseall(s::AbstractString) = parseall(IOBuffer(s))
 
 end

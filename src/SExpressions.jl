@@ -7,10 +7,12 @@ include("Lists/Lists.jl")
 include("Keywords/Keywords.jl")
 include("Parser/Parser.jl")
 
-import .Parser: parse, parses, parsefile
+import .Parser: parse, parseall, parsefile
+
+Base.@deprecate_binding parses parseall
 
 macro sx_str(x::String)
-    parse(x)
+    QuoteNode(parse(x))
 end
 
 export @sx_str
