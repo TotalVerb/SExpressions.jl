@@ -3,9 +3,9 @@
 
 Return the number of bytes that would be read if `c` were read from `io`.
 """
-readsize(io::IO, x::Union{Base.BitInteger, Float16, Float32, Float64}) =
+readsize(_::IO, x::Union{Base.BitInteger, Float16, Float32, Float64}) =
     sizeof(x)
-readsize(io::IO, c::Char) = Base.codelen(c)
+readsize(_::IO, c::Char) = Base.codelen(c)
 
 """
     peek(io::IO, T::Type)

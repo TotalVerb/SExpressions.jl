@@ -1,15 +1,17 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
 os:
-  - linux
-  - osx
+    - linux
+    - osx
 julia:
-  - nightly
+    - 0.6
+    - nightly
 notifications:
-  email: false
+    email: false
 script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone("https://github.com/TotalVerb/SchemeSyntax.jl.git")'
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("SExpressions"); Pkg.test("SExpressions"; coverage=true)'
-  - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("SExpressions")); include(joinpath("docs", "make.jl"))'
+    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+    - julia -e 'Pkg.clone(pwd()); Pkg.build("SExpressions"); Pkg.test("SExpressions"; coverage=true)'
+after_success:
+    - julia -e 'Pkg.add("Documenter")'
+    - julia -e 'cd(Pkg.dir("SExpressions")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+    - julia -e 'cd(Pkg.dir("SExpressions")); include(joinpath("docs", "make.jl"))'
