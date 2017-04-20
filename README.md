@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/TotalVerb/SExpressions.jl.svg?branch=master)](https://travis-ci.org/TotalVerb/SExpressions.jl)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://wafy.me/SExpressions.jl/stable)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://wafy.me/SExpressions.jl/latest)
+[![codecov](https://codecov.io/gh/TotalVerb/SExpressions.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/TotalVerb/SExpressions.jl)
 
 ## Philosophy
 
