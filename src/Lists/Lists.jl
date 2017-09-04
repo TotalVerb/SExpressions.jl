@@ -4,6 +4,7 @@ import FunctionalCollections: append
 using Base.Iterators
 
 const ⊚ = Base.map
+const car = Base.first
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
        append, ++, ⊚, cons, list, islist, Nil

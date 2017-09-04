@@ -1,6 +1,6 @@
 @testset "Parser" begin
 
-const sx = SExpressions.parse
+sx = SExpressions.parse
 
 @testset "numbers" begin
     @test sx("-1") == -1
