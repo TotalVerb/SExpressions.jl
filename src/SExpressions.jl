@@ -9,8 +9,6 @@ include("Parser/Parser.jl")
 
 import .Parser: parse, parseall, parsefile
 
-Base.@deprecate_binding parses parseall
-
 macro sx_str(x::String)
     QuoteNode(parse(x))
 end
