@@ -54,6 +54,7 @@ actions = Dict(
 )
 
 # Generate a tokenizing function from the machine.
+context = Automa.CodeGenContext()
 @eval function tryparse(::Type{Number}, data::String)
     curcomplex = big(0)
     curnat = big(0)
@@ -61,7 +62,7 @@ actions = Dict(
     cursign = 1
     curnumerator = true
     mark = 0
-    $(Automa.generate_init_code(machine))
+    $(Automa.generate_init_code(context, machine))
     p_end = p_eof = endof(data)
     gettoken() = data[mark:p-1]
 
@@ -89,7 +90,7 @@ actions = Dict(
     elseif kind == :imaginary
         cursign *= im
     end
-    $(Automa.generate_exec_code(machine, actions=actions))
+    $(Automa.generate_exec_code(context, machine, actions))
     nextterm!()
     if cs == 0
         Nullable{Number}(curcomplex)

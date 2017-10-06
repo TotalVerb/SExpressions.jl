@@ -27,7 +27,7 @@ end
     @test @inferred(peek(buf, Char)) == 'H'  # test again
     @test @inferred(read(buf, Char)) == 'H'
     @test @inferred(peek(buf, Char)) == 'e'
-    @test length(readstring(buf)) == 10
+    @test length(read(buf, String)) == 10
     @test_throws EOFError peek(buf, UInt8)
     @test_throws EOFError peek(buf, Char)
 end
