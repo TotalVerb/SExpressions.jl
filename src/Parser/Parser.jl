@@ -75,6 +75,48 @@ function readsymbol(io::IO)
 end
 
 """
+A dot as in (a . b).
+"""
+struct Dot end
+
+"""
+Build an improper list (a b . c).
+"""
+function improperlist(prefix, terminal)
+    if isempty(prefix)
+        terminal
+    else
+        Cons(prefix[1], improperlist(prefix[2:end], terminal))
+    end
+end
+
+"""
+Check that there are no . in objs, and return the list if so. Otherwise process the dots as
+they should be.
+"""
+function listify(objs) :: List
+    objs_ = collect(objs)
+    dots = count(equalto(Dot()), objs_)
+    if dots == 0
+        objs_
+    elseif dots == 1
+        if length(objs_) ≤ 2 || objs_[end - 1] !== Dot()
+            error("invalid use of .")
+        else
+            improperlist(objs_[1:end-2], objs_[end])
+        end
+    elseif dots == 2
+        if length(objs_) == 5 && objs_[2] === objs_[4] === Dot()
+            [objs_[3], objs_[1], objs_[5]]
+        else
+            error("invalid use of .")
+        end
+    else
+        error("invalid use of .")
+    end
+end
+
+"""
     nextobject(io::IO)
 
 Obtain the next Racket object from the given `io` object, or `Nullable()` if
@@ -94,7 +136,7 @@ function nextobject(io::IO)
         read(io, Char)
         cl = closer(c)
         objects = readobjectsuntil(io, cl)
-        Nullable(convert(List, objects))
+        Nullable(listify(objects))
     elseif c in ")]}"
         error("mismatched superfluous $c")
     elseif c in keys(_READER_MACROS)
@@ -109,7 +151,7 @@ function nextobject(io::IO)
     else
         str = readsymbol(io)
         if str == "."
-            error(". currently unsupported")
+            Nullable(Dot())
         else
             asnumber = tryparse(Number, str)
             Nullable(get(asnumber, Symbol(str)))

@@ -69,6 +69,7 @@ unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
 unparse(::Void) = "#<void>"
 
+Base.convert(::Type{List}, xs::List) = xs
 Base.convert(::Type{List}, xs) = List(xs...)
 append(::Nil, β::List) = β
 append(α::Cons, β::List) = Cons(car(α), append(cdr(α), β))

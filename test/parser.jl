@@ -68,7 +68,14 @@ end
 
 @testset "lists" begin
     @test sx("(1 2 3)") == List(1, 2, 3)
-    @test_broken sx("(1 . 2)") == Cons(1, 2)
+    @test sx("(1 . 2)") == Cons(1, 2)
+    @test sx("(1 . (2))") == List(1, 2)
+    @test sx("(1 . + . 2)") == List(:+, 1, 2)
+    @test sx("(1 2 . 3)") == Cons(1, Cons(2, 3))
+    @test_throws ErrorException sx("(.)")
+    @test_throws ErrorException sx("(. x)")
+    @test_throws ErrorException sx("(1 . 2 3)")
+    @test_throws ErrorException sx("(1 . 2 . 3 . 4)")
 end
 
 @testset "reader macros" begin
