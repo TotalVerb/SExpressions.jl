@@ -93,9 +93,9 @@ context = Automa.CodeGenContext()
     $(Automa.generate_exec_code(context, machine, actions))
     nextterm!()
     if cs == 0
-        Nullable{Number}(curcomplex)
+        curcomplex
     else
-        Nullable{Number}()
+        nothing
     end
 end
 

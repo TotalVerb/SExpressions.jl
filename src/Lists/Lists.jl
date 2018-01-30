@@ -67,7 +67,7 @@ unparse(b::Bool) = b ? "#t" : "#f"
 unparse(s::Symbol) = string(s)
 unparse(s::String) = repr(s)
 unparse(i::BigInt) = string(i)
-unparse(::Void) = "#<void>"
+unparse(::Nothing) = "#<void>"
 
 Base.convert(::Type{List}, xs::List) = xs
 Base.convert(::Type{List}, xs) = List(xs...)

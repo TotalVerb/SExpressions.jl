@@ -119,13 +119,13 @@ end
 """
     nextobject(io::IO)
 
-Obtain the next Racket object from the given `io` object, or `Nullable()` if
+Obtain the next Racket object from the given `io` object, wrapped in `Some`, or `nothing` if
 there is no more input left.
 """
 function nextobject(io::IO)
     skipws(io)
     if eof(io)
-        return Nullable()
+        return nothing
     end
 
     c = peek(io, Char)
@@ -136,25 +136,30 @@ function nextobject(io::IO)
         read(io, Char)
         cl = closer(c)
         objects = readobjectsuntil(io, cl)
-        Nullable(listify(objects))
+        Some(listify(objects))
     elseif c in ")]}"
         error("mismatched superfluous $c")
     elseif c in keys(_READER_MACROS)
         read(io, Char)
-        Nullable(List(_READER_MACROS[c], get(nextobject(io))))
+        nextobj = nextobject(io)
+        if nextobj === nothing
+            error("lonely reader macro $c")
+        else
+            Some(List(_READER_MACROS[c], coalesce(nextobj)))
+        end
     elseif c == '"'
         read(io, Char)
-        Nullable(parsestring(io))
+        Some(parsestring(io))
     elseif c == '#'
         read(io, Char)
-        Nullable(readhash(io))
+        Some(readhash(io))
     else
         str = readsymbol(io)
         if str == "."
-            Nullable(Dot())
+            Some(Dot())
         else
             asnumber = tryparse(Number, str)
-            Nullable(get(asnumber, Symbol(str)))
+            Some(coalesce(asnumber, Symbol(str)))
         end
     end
 end
@@ -175,10 +180,10 @@ function readobjectsuntil(io::IO, cl::Char)
             return objects
         else
             obj = nextobject(io)
-            if isnull(obj)
+            if obj === nothing
                 break
             else
-                push!(objects, get(obj))
+                push!(objects, coalesce(obj))
             end
         end
     end
@@ -281,10 +286,10 @@ function parse(s::AbstractString)
     buf = IOBuffer(s)
     obj = nextobject(buf)
     obj2 = nextobject(buf)
-    if isnull(obj)
+    if obj === nothing
         error("no object to read")
-    elseif isnull(obj2)
-        get(obj)
+    elseif obj2 === nothing
+        coalesce(obj)
     else
         error("extra content after end of expression")
     end
@@ -295,7 +300,13 @@ end
 
 Read a single object from the given `io` stream.
 """
-parse(io::IO) = get(nextobject(io))
+parse(io::IO) = let x = nextobject(io)
+    if x === nothing
+        error("no object to read")
+    else
+        coalesce(x)
+    end
+end
 
 """
     parsefile(filename::AbstractString)
@@ -313,8 +324,8 @@ Parse all objects from the given stream or string into a single list.
 """
 function parseall(io::IO)
     result = []
-    while (obj = nextobject(io); !isnull(obj))
-        push!(result, get(obj))
+    while (obj = nextobject(io); obj !== nothing)
+        push!(result, coalesce(obj))
     end
     convert(List, result)
 end

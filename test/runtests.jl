@@ -1,5 +1,5 @@
 using SExpressions
-using Base.Test
+using Test
 using Base.Iterators
 
 include("parser-util.jl")
