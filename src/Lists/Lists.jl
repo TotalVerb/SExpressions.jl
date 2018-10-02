@@ -52,9 +52,7 @@ ispair(α::List) = !isnil(α)
 islist(::Nil) = true
 islist(α::Cons) = islist(cdr(α))
 
-Base.start(α::List) = α
-Base.next(::List, β::List) = car(β), cdr(β)
-Base.done(::List, β::List) = isnil(β)
+Base.iterate(α::List, β=α) = isnil(β) ? nothing : (car(β), cdr(β))
 
 Base.length(::Nil) = 0
 Base.length(α::Cons) = 1 + length(cdr(α))

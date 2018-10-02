@@ -96,7 +96,7 @@ they should be.
 """
 function listify(objs) :: List
     objs_ = collect(objs)
-    dots = count(equalto(Dot()), objs_)
+    dots = count(isequal(Dot()), objs_)
     if dots == 0
         objs_
     elseif dots == 1
@@ -145,7 +145,7 @@ function nextobject(io::IO)
         if nextobj === nothing
             error("lonely reader macro $c")
         else
-            Some(List(_READER_MACROS[c], coalesce(nextobj)))
+            Some(List(_READER_MACROS[c], something(nextobj)))
         end
     elseif c == '"'
         read(io, Char)
@@ -159,7 +159,7 @@ function nextobject(io::IO)
             Some(Dot())
         else
             asnumber = tryparse(Number, str)
-            Some(coalesce(asnumber, Symbol(str)))
+            Some(something(asnumber, Symbol(str)))
         end
     end
 end
@@ -183,7 +183,7 @@ function readobjectsuntil(io::IO, cl::Char)
             if obj === nothing
                 break
             else
-                push!(objects, coalesce(obj))
+                push!(objects, something(obj))
             end
         end
     end
@@ -289,7 +289,7 @@ function parse(s::AbstractString)
     if obj === nothing
         error("no object to read")
     elseif obj2 === nothing
-        coalesce(obj)
+        something(obj)
     else
         error("extra content after end of expression")
     end
@@ -304,7 +304,7 @@ parse(io::IO) = let x = nextobject(io)
     if x === nothing
         error("no object to read")
     else
-        coalesce(x)
+        something(x)
     end
 end
 
@@ -325,7 +325,7 @@ Parse all objects from the given stream or string into a single list.
 function parseall(io::IO)
     result = []
     while (obj = nextobject(io); obj !== nothing)
-        push!(result, coalesce(obj))
+        push!(result, something(obj))
     end
     convert(List, result)
 end

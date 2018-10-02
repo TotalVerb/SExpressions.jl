@@ -1,23 +1,23 @@
 import SExpressions.Parser: readsize, peek
 
 @testset "readsize" begin
-    @test readsize(STDIN, 0x10) == 1
-    @test readsize(STDIN, 0x1000) == 2
-    @test readsize(STDIN, 0x10000000) == 4
-    @test readsize(STDIN, 0x1000000000000000) == 8
-    @test readsize(STDIN, 0x10000000000000000000000000000000) == 16
-    @test readsize(STDIN, Int8(1)) == 1
-    @test readsize(STDIN, Int16(1)) == 2
-    @test readsize(STDIN, Int32(1)) == 4
-    @test readsize(STDIN, Int64(1)) == 8
-    @test readsize(STDIN, Int128(1)) == 16
-    @test readsize(STDIN, Float16(0)) == 2
-    @test readsize(STDIN, 0.0f0) == 4
-    @test readsize(STDIN, 0.0) == 8
-    @test readsize(STDIN, 'x') == 1
-    @test readsize(STDIN, 'α') == 2
-    @test readsize(STDIN, '←') == 3
-    @test readsize(STDIN, '🍕') == 4
+    @test readsize(stdin, 0x10) == 1
+    @test readsize(stdin, 0x1000) == 2
+    @test readsize(stdin, 0x10000000) == 4
+    @test readsize(stdin, 0x1000000000000000) == 8
+    @test readsize(stdin, 0x10000000000000000000000000000000) == 16
+    @test readsize(stdin, Int8(1)) == 1
+    @test readsize(stdin, Int16(1)) == 2
+    @test readsize(stdin, Int32(1)) == 4
+    @test readsize(stdin, Int64(1)) == 8
+    @test readsize(stdin, Int128(1)) == 16
+    @test readsize(stdin, Float16(0)) == 2
+    @test readsize(stdin, 0.0f0) == 4
+    @test readsize(stdin, 0.0) == 8
+    @test readsize(stdin, 'x') == 1
+    @test readsize(stdin, 'α') == 2
+    @test readsize(stdin, '←') == 3
+    @test readsize(stdin, '🍕') == 4
 end
 
 @testset "peek" begin
