@@ -95,10 +95,9 @@ end
 end
 
 @testset "macro" begin
-    # we try to limit these in number, because if they fail then a LoadError
-    # occurs, and that is bad for debugging
-    @test sx"1" == 1
-    @test sx"foo" == :foo
+    # Wrap in `@eval` to capture failures at test time rather than load time.
+    @test @eval(sx"1")   == 1
+    @test @eval(sx"foo") == :foo
 end
 
 end

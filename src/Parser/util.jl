@@ -5,7 +5,7 @@ Return the number of bytes that would be read if `c` were read from `io`.
 """
 readsize(_::IO, x::Union{Base.BitInteger, Float16, Float32, Float64}) =
     sizeof(x)
-readsize(_::IO, c::Char) = Base.codelen(c)
+readsize(_::IO, c::Char) = @static VERSION < v"1.1.0" ? Base.codelen(c) : ncodeunits(c)
 
 """
     peek(io::IO, T::Type)
