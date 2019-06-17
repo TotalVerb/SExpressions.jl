@@ -63,7 +63,7 @@ context = Automa.CodeGenContext()
     curnumerator = true
     mark = 0
     $(Automa.generate_init_code(context, machine))
-    p_end = p_eof = endof(data)
+    p_end = p_eof = lastindex(data)
     gettoken() = data[mark:p-1]
 
     nextator!() = begin

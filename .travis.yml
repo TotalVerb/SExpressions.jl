@@ -6,13 +6,24 @@ os:
 julia:
     - 0.7
     - 1.0
+    - 1.1
+    - 1.2
     - nightly
 notifications:
     email: false
-script:
-    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-    - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("SExpressions"); Pkg.test("SExpressions"; coverage=true)'
+
+# .travis.yml codecov support is broken; see https://github.com/invenia/PkgTemplates.jl/issues/68
+# codecov: true
 after_success:
-    - julia -e 'using Pkg; Pkg.add("Documenter")'
-    - julia -e 'using Pkg; cd(Pkg.dir("SExpressions")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-    - julia -e 'using Pkg; cd(Pkg.dir("SExpressions")); include(joinpath("docs", "make.jl"))'
+    - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+jobs:
+  include:
+    - stage: Documentation
+      julia: 1.1
+      script: julia --project=docs -e '
+          using Pkg;
+          Pkg.develop(PackageSpec(path=pwd()));
+          Pkg.instantiate();
+          include("docs/make.jl");'
+      after_success: skip
+
