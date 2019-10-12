@@ -9,6 +9,13 @@
  performance isn’t a concern but if it’s too shitty we can consider ropes
 =#
 
+unparse(α::List) = "(" * join(unparse.(α), " ") * ")"
+unparse(b::Bool) = b ? "#t" : "#f"
+unparse(s::Symbol) = string(s)
+unparse(s::String) = repr(s)
+unparse(i::BigInt) = string(i)
+unparse(::Nothing) = "#<void>"
+
 struct ShowListContext
     indent::Int
     limit::Int

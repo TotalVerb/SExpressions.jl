@@ -3,11 +3,10 @@
 import FunctionalCollections: append
 using Base.Iterators
 
-const ⊚ = Base.map
 const car = Base.first
 
 export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
-       append, ++, ⊚, cons, list, islist, Nil
+       append, ++, cons, list, islist, Nil
 
 lispify(x) = x
 lispify(b::Bool) = b
@@ -29,8 +28,9 @@ caar(α::Cons) = car(car(α))
 cadr(α::Cons) = car(cdr(α))
 cddr(α::Cons) = cdr(cdr(α))
 
-Base.map(f, ::Nil) = nil
-Base.map(f, α::Cons) = Cons(f(car(α)), f ⊚ cdr(α))
+Base.map(f, ::Nil, ::Nil...) = nil
+Base.map(f, α::Cons, βs::Cons...) =
+    Cons(f(car(α), map(car, βs)...), map(f, cdr(α), map(cdr, βs)...))
 Base.filter(p, ::Nil) = nil
 Base.filter(p, α::Cons) = let β = filter(p, cdr(α))
     p(car(α)) ? Cons(car(α), β) : β
@@ -60,13 +60,6 @@ Base.length(α::Cons) = 1 + length(cdr(α))
 Base.getindex(α::Nil, b) = throw(BoundsError(α, b))
 Base.getindex(α::Cons, b) = b == 1 ? car(α) : cdr(α)[b - 1]
 
-unparse(α::List) = "(" * join(unparse ⊚ α, " ") * ")"
-unparse(b::Bool) = b ? "#t" : "#f"
-unparse(s::Symbol) = string(s)
-unparse(s::String) = repr(s)
-unparse(i::BigInt) = string(i)
-unparse(::Nothing) = "#<void>"
-
 Base.convert(::Type{List}, xs::List) = xs
 Base.convert(::Type{List}, xs) = List(xs...)
 append(::Nil, β::List) = β
@@ -74,6 +67,7 @@ append(α::Cons, β::List) = Cons(car(α), append(cdr(α), β))
 append(α::List, β::List, γ::List, γs::List...) = append(append(α, β), γ, γs...)
 const (++) = append
 
+include("broadcast.jl")
 include("show.jl")
 
 end  # Lists module

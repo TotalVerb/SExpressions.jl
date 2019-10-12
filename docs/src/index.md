@@ -1,12 +1,18 @@
 # SExpressions.jl
 
-SExpressions.jl includes a roughly [Racket](http://racket-lang.org/)-compatible
-parser for s-expressions.
-
-## Core Parser Interface
+SExpressions.jl includes a roughly [Racket](http://racket-lang.org/)-compatible parser for
+s-expressions.
 
 ```@contents
 ```
+
+## Lists
+
+```@docs
+SExpressions.Lists
+```
+
+## Core Parser Interface
 
 ```@docs
 SExpressions.parse
