@@ -5,13 +5,8 @@ using Base.Iterators
 
 const car = Base.first
 
-export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, lispify,
-       append, ++, cons, list, islist, Nil
-
-lispify(x) = x
-lispify(b::Bool) = b
-lispify(i::Integer) = BigInt(i)
-lispify(t::Tuple) = isempty(t) ? nil : Cons(lispify(t[1]), lispify(t[2:end]))
+export Cons, List, isnil, ispair, car, cdr, caar, cadr, cddr, nil, append, ++, cons, list,
+       islist, Nil
 
 struct Nil end
 const nil = Nil.instance
@@ -38,10 +33,17 @@ end
 
 Base.:(==)(α::Cons, β::Cons) = car(α) == car(β) && cdr(α) == cdr(β)
 
+"""
+An immutable linked list.
+
+A `List` is either `Nil` (empty) or `Cons`, where the first element is an arbitrary object
+and the second element is a `List`. Note that this second requirement is not enforced by the
+type system, since improper lists are allowable in many lisp dialects.
+"""
 const List = Union{Cons, Nil}
 
 List() = nil
-List(xs...) = Cons(lispify(xs[1]), List(xs[2:end]...))
+List(x, xs...) = Cons(x, List(xs...))
 const list = List
 
 isnil(::Nil) = true

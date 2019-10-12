@@ -27,7 +27,7 @@ end
     @test sx("(+ 1/2 1/3)") == List(:(+), 1//2, 1//3)
     @test sx("""
     (define (sqr x) (^ x 2))
-    """) == lispify((
+    """) == SExpression((
             :define,
             (:sqr, :x),
             (:(^), :x, 2)))

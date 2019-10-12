@@ -9,11 +9,12 @@
  performance isn’t a concern but if it’s too shitty we can consider ropes
 =#
 
+# TODO: missing lots of native s-expression types here. also non-native types
 unparse(α::List) = "(" * join(unparse.(α), " ") * ")"
 unparse(b::Bool) = b ? "#t" : "#f"
 unparse(s::Symbol) = string(s)
-unparse(s::String) = repr(s)
-unparse(i::BigInt) = string(i)
+unparse(s::AbstractString) = repr(String(s))
+unparse(i::Integer) = string(BigInt(i))
 unparse(::Nothing) = "#<void>"
 
 struct ShowListContext

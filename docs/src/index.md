@@ -8,8 +8,9 @@ s-expressions.
 
 ## Lists
 
-```@docs
-SExpressions.Lists
+```@autodocs
+Modules = [Lists]
+Order   = [:function, :type]
 ```
 
 ## Core Parser Interface

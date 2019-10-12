@@ -5,11 +5,40 @@ module Parser
 using Base.Iterators
 using ..Lists
 using ..Keywords
+import Base: convert
+
+export parse, SExpression
+
+"""
+Union type of all types allowed in primitive s-expressions. The output of `parse` is
+guaranteed to be an `SExpression`.
+"""
+const SExpression =
+    Union{BigInt,
+          Float64,
+          Rational{BigInt},
+          Complex{BigInt},
+          Complex{Float64},
+          Complex{Rational{BigInt}},
+          Nothing,
+          Bool,
+          String,
+          Symbol,
+          List}
+
+convert(::Type{SExpression}, x::Integer) = BigInt(x)
+convert(::Type{SExpression}, x::AbstractFloat) = Float64(x)
+convert(::Type{SExpression}, x::Rational) = Rational{BigInt}(x)
+convert(::Type{SExpression}, x::Complex{<:Integer}) = Complex{BigInt}(x)
+convert(::Type{SExpression}, x::Complex{<:AbstractFloat}) = Complex{Float64}(x)
+convert(::Type{SExpression}, x::Complex{<:Rational}) = Complex{Rational{BigInt}}(x)
+convert(::Type{SExpression}, x::AbstractString) = String(x)
+convert(::Type{SExpression}, xs::Tuple) = List(convert.(SExpression, xs)...)
+convert(::Type{SExpression}, xs::AbstractVector) = List(convert.(SExpression, xs)...)
+SExpression(x) = convert(SExpression, x)
 
 include("numeric.jl")
 include("util.jl")
-
-export parse
 
 const _DELIMITERS = collect("()[]{}\",'`;")
 
@@ -122,7 +151,7 @@ end
 Obtain the next Racket object from the given `io` object, wrapped in `Some`, or `nothing` if
 there is no more input left.
 """
-function nextobject(io::IO)
+function nextobject(io::IO) :: Union{Some{<:Union{Dot, SExpression}}, Nothing}
     skipws(io)
     if eof(io)
         return nothing
@@ -289,7 +318,7 @@ function parse(s::AbstractString)
     if obj === nothing
         error("no object to read")
     elseif obj2 === nothing
-        something(obj)
+        something(obj) :: SExpression
     else
         error("extra content after end of expression")
     end
@@ -304,7 +333,7 @@ parse(io::IO) = let x = nextobject(io)
     if x === nothing
         error("no object to read")
     else
-        something(x)
+        something(x) :: SExpression
     end
 end
 
@@ -325,7 +354,7 @@ Parse all objects from the given stream or string into a single list.
 function parseall(io::IO)
     result = []
     while (obj = nextobject(io); obj !== nothing)
-        push!(result, something(obj))
+        push!(result, something(obj) :: SExpression)
     end
     convert(List, result)
 end
