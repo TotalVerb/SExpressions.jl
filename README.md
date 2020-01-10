@@ -7,13 +7,14 @@
 
 ## Philosophy
 
-S-expressions simplify many things. Therefore, easy handling of s-expressions
-is useful.
+S-expressions simplify many things. Therefore, easy handling of s-expressions is useful.
 
 ## Requirements
 
-This package is not yet listed. Install at your own peril. It also requires a
-master Julia.
+Although this package is registered, it is not complete. However, the chance of breaking
+changes is quite low (as mostly the parser will just be made more permissive, not less), and
+any breaking changes will be communicated with a new major version. Julia v1.0 and higher
+are supported.
 
 ## Parsing and pretty-printing
 
@@ -26,14 +27,13 @@ julia> sx"""
 (define (sqr x) (* x x))
 ```
 
-Note that the parser is neither fast nor memory-efficient, but it is simple. It
-doesn’t support any fancy features, even those present in most lisps.
+Note that the parser is neither fast nor memory-efficient, but it is simple. It doesn’t
+support any fancy features, even those present in most lisps.
 
-As is the convention, a pretty-printed representation is available using the
-`IOContext` flag for `:multiline`. Note that this package is “language”-agnostic
-and won’t format for any particular language, and doesn’t understand keywords,
-but rather it will format in accordance with general principles. Note that this
-flag is the default on the REPL.
+As is the convention, a pretty-printed representation is available using the `IOContext`
+flag for `:multiline`. Note that this package is “language”-agnostic and won’t format for
+any particular language, and doesn’t understand keywords, but rather it will format in
+accordance with general principles. Note that this flag is the default on the REPL.
 
 ```julia
 julia> sx"""
@@ -50,11 +50,9 @@ julia> sx"""
 This is not fast either. This package is not intended for huge files containing
 s-expressions.
 
-In lisp tradition, this package heavily relies on recursion. Of course, this
-means that you can probably break it with a stack overflow if you use it on very
-large data. It's also not super fast.
-
-Code minimalism is an important aim.
+In lisp tradition, this package heavily relies on recursion. Of course, this means that you
+can probably break it with a stack overflow if you use it on very large data. **It’s also
+not fast!** Buyer beware!
 
 ## FAQ
 
