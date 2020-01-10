@@ -9,7 +9,7 @@ import Base.Broadcast:
 # interface. This is not an easy problem to resolve.
 BroadcastStyle(::Type{<:List}) = Style{List}()
 BroadcastStyle(::Style{List}, ::AbstractArrayStyle{0}) = Style{List}()
-BroadcastStyle(::Style{List}, a::AbstractArrayStyle{N}) where {N} = s
+BroadcastStyle(::Style{List}, s::AbstractArrayStyle{N}) where {N} = s
 
 broadcastable(α::List) = α
 instantiate(bc::Broadcasted{Style{List}}) = bc
