@@ -10,16 +10,16 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 FunctionalCollections = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
+[compat]
+Automa = "0.7.0"
+DataStructures = "0.14.0"
+Documenter = "0.19.6"
+FunctionalCollections = "0.4.0, 0.5"
+Reexport = "0.2.0"
+julia = "1.0"
+
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test"]
-
-[compat]
-julia = "1.0"
-Automa = "0.7.0"
-DataStructures = "0.14.0"
-Documenter = "0.19.6"
-FunctionalCollections = "0.4.0"
-Reexport = "0.2.0"
