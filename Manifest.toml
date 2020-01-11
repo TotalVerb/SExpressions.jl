@@ -1,19 +1,19 @@
 # This file is machine-generated - editing it directly is not advised
 
 [[Automa]]
-deps = ["DataStructures", "Printf", "Test", "TranscodingStreams"]
-git-tree-sha1 = "1b1defa8b36d44dd22c715b5c884c8f795eea7fe"
+deps = ["DataStructures", "Printf", "Random", "Test", "TranscodingStreams"]
+git-tree-sha1 = "c81526bf5f6fb4616b4e22a3cd62ac20e255fd3c"
 uuid = "67c07d97-cdcb-5c2c-af73-a7f9c32a568b"
-version = "0.7.0"
+version = "0.8.0"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "9663048b4d1b8dedb593708f607891920234a854"
+git-tree-sha1 = "f784254f428fb8fd7ac15982e5862a38a44523d3"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.14.1"
+version = "0.17.7"
 
 [[Dates]]
 deps = ["Printf"]
@@ -23,36 +23,22 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
-[[DocStringExtensions]]
-deps = ["LibGit2", "Markdown", "Pkg", "Test"]
-git-tree-sha1 = "88bb0edb352b16608036faadcc071adda068582a"
-uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
-version = "0.8.1"
-
-[[Documenter]]
-deps = ["Base64", "Dates", "DocStringExtensions", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
-git-tree-sha1 = "885467cebde4639a3d81953652cc53ff5a73cb87"
-uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-version = "0.24.3"
-
 [[FunctionalCollections]]
 deps = ["Test"]
-git-tree-sha1 = "9fdecc849480c511d7825570c20c9b64c4e5d5ed"
+git-tree-sha1 = "04cb9cfaa6ba5311973994fe3496ddec19b6292a"
 uuid = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
-version = "0.4.0"
+version = "0.5.0"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
-[[JSON]]
-deps = ["Dates", "Mmap", "Parsers", "Unicode"]
-git-tree-sha1 = "b34d7cef7b337321e97d22242c3c2b91f476748e"
-uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-version = "0.21.0"
-
 [[LibGit2]]
+deps = ["Printf"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
 [[Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -61,23 +47,14 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
-[[Mmap]]
-uuid = "a63ad114-7e13-5084-954f-fe012c677804"
-
 [[OrderedCollections]]
 deps = ["Random", "Serialization", "Test"]
 git-tree-sha1 = "c4c13474d23c60d20a67b217f1d7f22a40edf8f1"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.1.0"
 
-[[Parsers]]
-deps = ["Dates", "Test"]
-git-tree-sha1 = "0139ba59ce9bc680e2925aec5b7db79065d60556"
-uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "0.3.10"
-
 [[Pkg]]
-deps = ["Dates", "LibGit2", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
+deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[Printf]]
