@@ -9,7 +9,7 @@ include("Parser/Parser.jl")
 
 export SExpression
 import .Parser: parse, parseall, parsefile, SExpression
-using .Lists
+@reexport using .Lists
 
 macro sx_str(x::String)
     QuoteNode(parse(x))

@@ -10,6 +10,10 @@
 =#
 
 # TODO: missing lots of native s-expression types here. also non-native types
+# TODO: improper list printing
+"""
+Convenience function to produce compact strings from (proper) lists of lisp objects.
+"""
 unparse(α::List) = "(" * join(unparse.(α), " ") * ")"
 unparse(b::Bool) = b ? "#t" : "#f"
 unparse(s::Symbol) = string(s)
@@ -28,12 +32,8 @@ space(ctx::ShowListContext) = max(5, ctx.limit - ctx.indent)
 # performance is really not our concern
 sindent(ctx::ShowListContext) = " " ^ ctx.indent
 
-# “if we append or prepend, we should indent, not indented”
-# no. indent is also a noun. indented makes it clear what this does
 indented(ctx::ShowListContext, i=2) = ShowListContext(ctx.indent + i, ctx.limit)
 
-# putting an ‘s’ in front of all functions that return strings is terrible style
-# but sometimes terrible style is the best we’ve got
 sprintwidth(α) = sum(charwidth(c) for c in unparse(α))
 
 spprintall(ctx::ShowListContext, α) = join((β -> spprint(ctx, β)) ∘ α, '\n')

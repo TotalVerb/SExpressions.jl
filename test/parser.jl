@@ -100,4 +100,8 @@ end
     @test @eval(sx"foo") == :foo
 end
 
+@testset "interface" begin
+    @test parse(SExpression, "(1 . + . (2 . * . 3))") == List(:+, 1, List(:*, 2, 3))
+end
+
 end

@@ -309,7 +309,8 @@ end
 """
     parse(s::AbstractString)
 
-Read the given string `s` as a single s-expression.
+Read the given string `s` as a single s-expression. The alternative vocabulary
+`Base.parse(SExpression, s)` is also supported and may be preferred.
 """
 function parse(s::AbstractString)
     buf = IOBuffer(s)
@@ -336,6 +337,9 @@ parse(io::IO) = let x = nextobject(io)
         something(x) :: SExpression
     end
 end
+
+# allow `parse(SExpression, o)`, which reads nicer than `SExpression.parse(o)`
+Base.parse(::Type{SExpression}, o) = parse(o) :: SExpression
 
 """
     parsefile(filename::AbstractString)
