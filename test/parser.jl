@@ -6,13 +6,26 @@ sx = SExpressions.parse
 
 @testset "numbers" begin
     @test sx("-1") == -1
+    @test sx("-1") isa BigInt
     @test sx("+1000") == 1000
+    @test sx("+1000") isa BigInt
     @test sx("-15/5") == -3
+    @test sx("-15/5") isa Rational{BigInt}
     @test sx("+13/17") == 13//17
+    @test sx("+13/17") isa Rational{BigInt}
     @test sx("-1/2") == -1//2
+    @test sx("-1/2") isa Rational{BigInt}
     @test sx("-1/2+3i") == -1//2+3im
+    @test sx("-1/2+3i") isa Complex{Rational{BigInt}}
     @test sx("3+4/3i") == 3+4im//3
+    @test sx("3+4/3i") isa Complex{Rational{BigInt}}
     @test sx("3-2i") == 3-2im
+    @test sx("3-2i") isa Complex{BigInt}
+    @test_broken sx("0.5") === 0.5
+    @test_broken sx("#e0.5") == 1//2
+    @test_broken sx("#e0.5") isa Rational{BigInt}
+    @test_broken sx("#x03BB") == 955
+    @test_broken sx("#x03BB") isa BigInt
 end
 
 @testset "booleans" begin
@@ -88,7 +101,7 @@ end
     @test_broken sx("`(+ ,@xs 2)") ==
         SExpression((:quasiquote,
                     (:(+),
-                     (Symbol("unquote-splicing"), :x),
+                     (Symbol("unquote-splicing"), :xs),
                      2)))
 end
 
