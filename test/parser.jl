@@ -1,3 +1,5 @@
+import SExpressions.Keywords: Keyword
+
 @testset "Parser" begin
 
 sx = SExpressions.parse
@@ -102,6 +104,14 @@ end
 
 @testset "interface" begin
     @test parse(SExpression, "(1 . + . (2 . * . 3))") == List(:+, 1, List(:*, 2, 3))
+end
+
+@testset "keywords" begin
+    @test parse(SExpression, "(eq? '#:apple '#:orange)") ==
+        List(Symbol("eq?"),
+             List(:quote, Keyword("apple")),
+             List(:quote, Keyword("orange")),
+        )
 end
 
 end

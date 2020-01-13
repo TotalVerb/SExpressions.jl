@@ -24,7 +24,8 @@ const SExpression =
           Bool,
           String,
           Symbol,
-          List}
+          List,
+          Keyword}
 
 convert(::Type{SExpression}, x::Integer) = BigInt(x)
 convert(::Type{SExpression}, x::AbstractFloat) = Float64(x)
