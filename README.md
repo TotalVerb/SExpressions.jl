@@ -13,7 +13,7 @@ S-expressions simplify many things. Therefore, easy handling of s-expressions is
 
 Although this package is registered, it is not complete. However, the chance of breaking
 changes is quite low (as mostly the parser will just be made more permissive, not less), and
-any breaking changes will be communicated with a new major version. Julia v1.0 and higher
+any breaking changes will be communicated with a new major version. Julia v1.6 and higher
 are supported.
 
 ## Parsing and pretty-printing
