@@ -29,12 +29,12 @@ complex   = real * plusminus * impositive
 number    = real | complex
 
 # register actions
-natural.actions[:enter]  = [:markn]
-natural.actions[:exit]   = [:natural]
-plussign.actions[:exit]  = [:positive]
-minussign.actions[:exit] = [:negative]
-fraction.actions[:exit]  = [:fraction]
-imagunit.actions[:exit]  = [:imaginary]
+Automa.onenter!(natural, :markn)
+Automa.onexit!(natural, :natural)
+Automa.onexit!(plussign, :positive)
+Automa.onexit!(minussign, :negative)
+Automa.onexit!(fraction, :fraction)
+Automa.onexit!(imagunit, :imaginary)
 
 # compile finite-state machine
 machine = Automa.compile(number)
